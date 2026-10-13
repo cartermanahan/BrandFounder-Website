@@ -6,16 +6,16 @@
   <meta name="color-scheme" content="dark light" />
   <meta name="theme-color" content="#07070d" media="(prefers-color-scheme: dark)" />
   <meta name="theme-color" content="#fbfbfc" media="(prefers-color-scheme: light)" />
-  <title>BrandFounder — Terms of Use</title>
+  <title>Terms of Use | BrandFounder</title>
   <meta name="description" content="Terms governing the BrandFounder service." />
   <link rel="canonical" href="https://brandfounder.ai/pages/terms.html" />
-  <meta property="og:title" content="BrandFounder — Terms of Use" />
+  <meta property="og:title" content="Terms of Use | BrandFounder" />
   <meta property="og:description" content="Terms governing the BrandFounder service." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://brandfounder.ai/pages/terms.html" />
   <meta property="og:image" content="https://brandfounder.ai/images/logos/brandfounder-logo.png" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="BrandFounder — Terms of Use" />
+  <meta name="twitter:title" content="Terms of Use | BrandFounder" />
   <meta name="twitter:description" content="Terms governing the BrandFounder service." />
   <meta name="twitter:image" content="https://brandfounder.ai/images/logos/brandfounder-logo.png" />
   <script>
@@ -26,104 +26,147 @@
       } catch (error) { console.warn('Theme preference unavailable.', error); }
     })();
   </script>
-  <link rel="stylesheet" href="../styles/fonts.css" />
-  <link rel="stylesheet" href="../styles/site.css" />
-  <link rel="stylesheet" href="../styles/navbar.css" />
+  <link rel="stylesheet" href="../styles/fonts.css?v=15" />
+  <link rel="stylesheet" href="../styles/site.css?v=15" />
+  <link rel="stylesheet" href="../styles/navbar.css?v=15" />
   <link rel="icon" type="image/png" href="../images/icons/brandfounder-icon.png" />
-  <script src="../scripts/navbar.js" defer></script>
-  <script src="../scripts/site.js" defer></script>
+  <script src="../scripts/navbar.js?v=15" defer></script>
+  <script src="../scripts/site.js?v=15" defer></script>
 </head>
 <body class="legal-page">
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="navbar">
     <div class="navbar-shell">
       <button class="navbar-brand" id="navbar-brand-toggle" type="button" aria-label="Open navigation" aria-controls="nav-menu" aria-expanded="true">
-        <picture><source srcset="../images/logos/logo_white.png" media="(prefers-color-scheme: dark)" data-theme-dark-source /><img class="logo-icon" src="../images/logos/logo_gradient.png" data-theme-light-src="../images/logos/logo_gradient.png" data-theme-dark-src="../images/logos/logo_white.png" alt="" width="28" height="28" decoding="async" /></picture>
+        <picture>
+          <source srcset="../images/logos/logo_white.png" media="(prefers-color-scheme: dark)" data-theme-dark-source />
+          <img src="../images/logos/logo_gradient.png" alt="" class="logo-icon" width="28" height="28" decoding="async" />
+        </picture>
       </button>
+
       <div class="navbar-pill">
         <nav class="nav-links" aria-label="Primary">
-          <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Toggle menu" aria-controls="nav-menu" aria-expanded="false"><span></span><span></span><span></span></button>
+          <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Toggle menu" aria-controls="nav-menu" aria-expanded="false">
+            <span></span><span></span><span></span>
+          </button>
           <ul id="nav-menu">
+            <li><a href="../index.html">Home</a></li>
             <li><a href="../index.html#how-it-works">How it works</a></li>
-            <li><a href="../index.html#inside">What you get</a></li>
             <li><a href="../index.html#examples">Examples</a></li>
-            <li><a href="../index.html#preview">Try it free</a></li>
+            <li><a href="../index.html#inside">What you get</a></li>
+            <li><a href="../index.html#preview">Free preview</a></li>
             <li><a href="../index.html#faq">FAQ</a></li>
-            <li><a href="privacy-policy.html">Privacy</a></li>
-            <li><a href="terms.html" aria-current="page">Terms</a></li>
+            <li class="nav-legal"><a href="privacy-policy.html">Privacy</a></li>
+            <li class="nav-legal"><a href="terms.html" aria-current="page">Terms</a></li>
           </ul>
         </nav>
-        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to dark mode" title="Switch to dark mode"><span class="theme-toggle-icon" aria-hidden="true"></span></button>
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to dark mode" title="Switch to dark mode">
+          <span class="theme-toggle-icon" aria-hidden="true"></span>
+        </button>
       </div>
-      <a href="https://apps.apple.com/app/id6759218062" class="navbar-cta" aria-label="Get BrandFounder on the App Store" target="_blank" rel="noopener noreferrer">Launch your brand</a>
+
+      <a class="navbar-cta" href="https://apps.apple.com/app/id6759218062" target="_blank" rel="noopener noreferrer">Launch your brand</a>
     </div>
   </header>
 
   <main id="main">
-    <section class="legal-hero"><div class="container"><div class="legal-hero-inner">
-      <p class="legal-breadcrumb"><a href="../index.html">Home</a> / Terms of Use</p>
-      <h1>Terms of Use</h1>
-      <p class="legal-hero-sub">These Terms govern the BrandFounder service. The iOS application licence is also subject to Apple’s Standard EULA, as explained below.</p>
-      <p class="legal-meta">Contact: <a href="mailto:support@brandfounder.ai">support@brandfounder.ai</a><br />Effective: 21 September 2026</p>
-    </div></div></section>
+    <section class="legal-hero">
+      <div class="container legal-hero-inner">
+        <nav class="legal-switch" aria-label="Legal documents"><a href="privacy-policy.html">Privacy Policy</a><a href="terms.html" aria-current="page">Terms of Use</a></nav>
+        <h1>Terms <span class="ser">of Use</span></h1>
+        <p class="legal-hero-sub">These Terms govern the BrandFounder service. The iOS application licence is also subject to Apple’s Standard EULA, as explained below.</p>
+        <dl class="legal-meta">
+          <div><dt>Effective</dt><dd>21 September 2026</dd></div>
+          <div><dt>Questions</dt><dd><a href="mailto:support@brandfounder.ai">support@brandfounder.ai</a></dd></div>
+        </dl>
+      </div>
+    </section>
 
-    <section class="legal-content"><div class="container">
+    <section class="legal-content">
+      <div class="container legal-layout">
+        <aside class="legal-toc" aria-label="On this page">
+          <p class="legal-toc-title">On this page</p>
+          <ol>
+            <li><a href="#who-provides-brandfounder">1. Who provides BrandFounder</a></li>
+            <li><a href="#eligibility-and-agreement">2. Eligibility and agreement</a></li>
+            <li><a href="#the-service">3. The service</a></li>
+            <li><a href="#accounts">4. Accounts</a></li>
+            <li><a href="#your-inputs-and-permission-to-process-them">5. Your inputs and permission to process them</a></li>
+            <li><a href="#ai-processing-and-generated-output">6. AI processing and generated output</a></li>
+            <li><a href="#names-trademarks-and-professional-advice">7. Names, trademarks and professional advice</a></li>
+            <li><a href="#use-and-ownership-of-results">8. Use and ownership of results</a></li>
+            <li><a href="#acceptable-use">9. Acceptable use</a></li>
+            <li><a href="#purchases-delivery-retries-and-refunds">10. Purchases, delivery, retries and refunds</a></li>
+            <li><a href="#availability-and-changes">11. Availability and changes</a></li>
+            <li><a href="#suspension-and-termination">12. Suspension and termination</a></li>
+            <li><a href="#consumer-rights">13. Consumer rights</a></li>
+            <li><a href="#disclaimers">14. Disclaimers</a></li>
+            <li><a href="#liability">15. Liability</a></li>
+            <li><a href="#privacy">16. Privacy</a></li>
+            <li><a href="#apple-standard-eula">17. Apple Standard EULA</a></li>
+            <li><a href="#governing-law-and-disputes">18. Governing law and disputes</a></li>
+            <li><a href="#changes-to-these-terms">19. Changes to these Terms</a></li>
+            <li><a href="#contact">20. Contact</a></li>
+          </ol>
+        </aside>
+        <div class="legal-body">
+
       <article class="legal-section">
-        <h2>1. Who provides BrandFounder</h2>
+        <h2 id="who-provides-brandfounder">1. Who provides BrandFounder</h2>
         <p>BrandFounder is provided by Carter Manahan, trading as BrandFounder, a sole trader based in the United Kingdom (“we”, “us” and “our”). BrandFounder is a trading name, not a limited company or separate incorporated legal entity.</p>
         <p>Email: <a href="mailto:support@brandfounder.ai">support@brandfounder.ai</a></p>
       </article>
 
       <article class="legal-section">
-        <h2>2. Eligibility and agreement</h2>
+        <h2 id="eligibility-and-agreement">2. Eligibility and agreement</h2>
         <p>You must be legally able to enter into this agreement. If you use BrandFounder for an organisation, you confirm that you have authority to act for it. By creating an account, buying a Brand Pack or using the service, you agree to these Terms. If you do not agree, do not use the service.</p>
       </article>
 
       <article class="legal-section">
-        <h2>3. The service</h2>
+        <h2 id="the-service">3. The service</h2>
         <p>BrandFounder helps you develop brand strategy, copy, visual identity directions, promotional concepts and launch materials. Some features use generative AI and third-party services. Features and available outputs may change as the product develops; the current paid-pack contents and price are shown before purchase.</p>
         <p>A limited free preview may be offered before purchase so you can see an early version of your brand. Free previews are limited per device and per account, may be changed or withdrawn, and are not a paid Brand Pack.</p>
         <p>To keep the service fair and available, a Brand Pack includes a set number of regenerations and rerolls for its features, and daily usage limits apply to AI features. The current allowances are shown in the app. Limits may be adjusted to protect the service, but not in a way that removes the core deliverables of a pack you have already bought.</p>
       </article>
 
       <article class="legal-section">
-        <h2>4. Accounts</h2>
+        <h2 id="accounts">4. Accounts</h2>
         <p>You are responsible for providing accurate information, keeping your sign-in method secure and activity carried out through your account. Tell us promptly if you believe your account has been accessed without permission. You may permanently delete your account using the in-app deletion flow.</p>
       </article>
 
       <article class="legal-section">
-        <h2>5. Your inputs and permission to process them</h2>
+        <h2 id="your-inputs-and-permission-to-process-them">5. Your inputs and permission to process them</h2>
         <p>You keep any rights you have in text, names, logos, images, reference material and other content you submit. You give us a limited, non-exclusive permission to host, copy, transmit, adapt technically and process that material only as needed to operate, secure, support and provide BrandFounder and, where you separately opt in, to improve results.</p>
         <p>You confirm that you have the rights and permissions needed for anything you submit, including permission from identifiable people shown in selected photos or reference images. Do not submit sensitive personal information unless it is genuinely necessary for your request.</p>
       </article>
 
       <article class="legal-section">
-        <h2>6. AI processing and generated output</h2>
+        <h2 id="ai-processing-and-generated-output">6. AI processing and generated output</h2>
         <p>Before the first AI request on a device, BrandFounder explains what will be sent. When you allow AI processing and request an AI feature, the information needed for that request may be sent through BrandFounder’s backend to the OpenAI API, as described in the <a href="privacy-policy.html">Privacy Policy</a>.</p>
         <p>AI output can be inaccurate, incomplete, outdated, similar to output produced for someone else or unsuitable for your circumstances. You must review and, where needed, edit and independently verify every output before publishing, registering, printing, spending money or relying on it.</p>
         <p>BrandFounder does not guarantee uniqueness, originality, intellectual-property protection, registrability, commercial success, legal or regulatory compliance, trademark or company-name availability, domain availability, advertising performance, or suitability for a particular market or purpose.</p>
       </article>
 
       <article class="legal-section">
-        <h2>7. Names, trademarks and professional advice</h2>
+        <h2 id="names-trademarks-and-professional-advice">7. Names, trademarks and professional advice</h2>
         <p>BrandFounder does not perform trademark clearance, company-name clearance, domain-availability checks, advertising-law review or professional legal, tax, financial, accounting or regulatory advice. Market and pricing material is an AI-assisted starting point based on your brief, not live professional research or a promise of demand, income or success.</p>
         <p>Before using a name, mark, claim, price or strategy, carry out appropriate current checks and obtain professional advice where needed.</p>
       </article>
 
       <article class="legal-section">
-        <h2>8. Use and ownership of results</h2>
+        <h2 id="use-and-ownership-of-results">8. Use and ownership of results</h2>
         <p>As between you and BrandFounder, and to the extent permitted by applicable law and relevant provider terms, you may use results generated for you for personal or commercial purposes. The legal status of AI-generated material can vary, and intellectual-property rights may not arise in an output.</p>
         <p>BrandFounder retains its rights in the app, website, software, interface, templates, methods, branding and pre-existing materials. These Terms do not transfer those rights to you.</p>
       </article>
 
       <article class="legal-section">
-        <h2>9. Acceptable use</h2>
+        <h2 id="acceptable-use">9. Acceptable use</h2>
         <p>You must not use BrandFounder to:</p>
         <ul><li>break the law or encourage unlawful conduct;</li><li>infringe intellectual-property, privacy, publicity or other rights;</li><li>impersonate, mislead, defraud or deceive people;</li><li>create abusive, hateful, sexually exploitative or dangerous material;</li><li>submit malware or harmful code;</li><li>bypass security, usage, generation or payment controls;</li><li>reverse engineer the service where prohibited by law; or</li><li>interfere with other users, providers or systems.</li></ul>
       </article>
 
       <article class="legal-section">
-        <h2>10. Purchases, delivery, retries and refunds</h2>
+        <h2 id="purchases-delivery-retries-and-refunds">10. Purchases, delivery, retries and refunds</h2>
         <p>Paid Brand Packs are one-time in-app purchases processed by Apple. The price and included deliverables are shown before purchase. Regional App Store pricing may vary.</p>
         <p>A purchase is complete only once Apple confirms it. If a purchase needs approval, for example through Ask to Buy or a bank check, generation starts after Apple confirms payment, and you will not be charged twice while it is pending.</p>
         <p>A successful purchase is associated with the relevant account or entitlement. If generation is interrupted, delivery may be retried without a second purchase where that entitlement remains available. “Restore Purchases” can re-sync eligible App Store transactions; it does not guarantee recovery where Apple does not make an entitlement available.</p>
@@ -133,80 +176,101 @@
       </article>
 
       <article class="legal-section">
-        <h2>11. Availability and changes</h2>
+        <h2 id="availability-and-changes">11. Availability and changes</h2>
         <p>We use reasonable care to provide BrandFounder, but generation, authentication, storage and delivery depend on network connections and services supplied by Apple, Google/Firebase, OpenAI and others. We do not guarantee uninterrupted, instant or error-free operation. Generation time can vary with request complexity, connectivity and provider availability.</p>
         <p>We may change, suspend or discontinue a feature for security, legal, technical or product reasons. Where a change materially affects paid functionality already purchased, we will act consistently with applicable consumer law.</p>
       </article>
 
       <article class="legal-section">
-        <h2>12. Suspension and termination</h2>
+        <h2 id="suspension-and-termination">12. Suspension and termination</h2>
         <p>We may restrict or terminate access where reasonably necessary to address unlawful use, abuse, security risk, non-payment or a serious breach of these Terms. Where appropriate, we will take account of the seriousness of the issue and whether it can be remedied.</p>
         <p>You may stop using BrandFounder at any time and may permanently delete your account in the app. Provisions that need to continue by their nature, including intellectual-property, disclaimer and liability terms, survive termination.</p>
       </article>
 
       <article class="legal-section">
-        <h2>13. Consumer rights</h2>
+        <h2 id="consumer-rights">13. Consumer rights</h2>
         <p>If you are a consumer, BrandFounder will be supplied with the care and skill required by applicable law. You keep all mandatory rights and remedies available where you live. These Terms do not shorten, replace or waive a statutory guarantee, cooling-off right, refund right or other protection that cannot lawfully be excluded.</p>
       </article>
 
       <article class="legal-section">
-        <h2>14. Disclaimers</h2>
+        <h2 id="disclaimers">14. Disclaimers</h2>
         <p>Except for rights and promises that cannot legally be excluded, BrandFounder does not make additional warranties about AI output, availability or fitness for a particular purpose. In particular, we do not promise that an output will be unique, original, registrable, lawful, commercially successful or suitable for your intended use.</p>
       </article>
 
       <article class="legal-section">
-        <h2>15. Liability</h2>
+        <h2 id="liability">15. Liability</h2>
         <p>Nothing in these Terms excludes or limits liability where doing so would be unlawful, including liability for fraud, fraudulent misrepresentation, or death or personal injury caused by negligence.</p>
         <p>Subject to that, we are not responsible for loss that was not caused by our breach, was not reasonably foreseeable when you agreed to these Terms, resulted from your failure to review or verify an output, or is a business loss suffered by a consumer. Any other exclusion or limitation applies only to the fullest extent permitted by applicable law.</p>
       </article>
 
       <article class="legal-section">
-        <h2>16. Privacy</h2>
+        <h2 id="privacy">16. Privacy</h2>
         <p>The <a href="privacy-policy.html">Privacy Policy</a> explains what information is processed, why it is used, who receives it, how long it is kept and the controls available to you. The in-app AI disclosure, crash-report setting, optional analytics setting and optional input-sharing setting provide additional controls.</p>
       </article>
 
       <article class="legal-section">
-        <h2>17. Apple Standard EULA</h2>
+        <h2 id="apple-standard-eula">17. Apple Standard EULA</h2>
         <p>These Terms govern the BrandFounder service and sit alongside Apple’s licence terms. Apple’s Standard Licensed Application End User License Agreement also applies to the licence for the iOS application. These website Terms are not a custom Apple EULA and do not replace Apple’s Standard EULA.</p>
         <p><a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener noreferrer">Read the Apple Standard EULA</a>. If an App Store platform term must take priority for distribution of the iOS app, that platform term applies to that extent. Apple is not responsible for providing BrandFounder support.</p>
       </article>
 
       <article class="legal-section">
-        <h2>18. Governing law and disputes</h2>
+        <h2 id="governing-law-and-disputes">18. Governing law and disputes</h2>
         <p>These Terms are governed by the laws of England and Wales. If you are a consumer, you keep any mandatory protections and rights to bring a claim available under the law and courts where you live.</p>
         <p>Please contact <a href="mailto:support@brandfounder.ai">support@brandfounder.ai</a> first if you have a problem so we can try to resolve it.</p>
       </article>
 
       <article class="legal-section">
-        <h2>19. Changes to these Terms</h2>
+        <h2 id="changes-to-these-terms">19. Changes to these Terms</h2>
         <p>We may update these Terms for legal, security, technical or material service changes. We will update the effective date and provide reasonable notice in the app or by another appropriate method where a change materially affects you. Changes do not remove mandatory consumer rights.</p>
       </article>
 
       <article class="legal-section">
-        <h2>20. Contact</h2>
+        <h2 id="contact">20. Contact</h2>
         <p>BrandFounder<br />4th Floor, Silverstream House, 45 Fitzroy Street, London W1T 6EB, United Kingdom<br />Email: <a href="mailto:support@brandfounder.ai">support@brandfounder.ai</a></p>
         <p class="legal-links"><a href="privacy-policy.html">Read the Privacy Policy</a> · <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener noreferrer">Apple Standard EULA</a></p>
       </article>
-      <div class="legal-footer-links"><a href="../index.html">Back to BrandFounder home</a></div>
-    </div></section>
+        </div>
+      </div>
+    </section>
   </main>
 
-  <footer class="foot">
-    <div class="wrap foot-top">
-      <div class="foot-brand">
-        <picture><source srcset="../images/logos/logo_white.png" media="(prefers-color-scheme: dark)" data-theme-dark-source /><img src="../images/logos/logo_black.png" alt="BrandFounder" width="38" height="38" loading="lazy" decoding="async" /></picture>
-        <p class="foot-line">Turn your idea into a brand <span class="ser">you can actually launch.</span></p>
-        <a class="foot-store" href="https://apps.apple.com/app/id6759218062" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M16.5 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.2-2.8.9-3.5.9s-1.8-.8-3-.8c-1.5 0-2.9.9-3.7 2.3-1.6 2.7-.4 6.8 1.1 9 .8 1.1 1.6 2.3 2.8 2.2 1.1 0 1.6-.7 3-.7s1.8.7 3 .7 2-1.1 2.8-2.1c.9-1.2 1.2-2.4 1.3-2.4-.1 0-2.4-.9-2.4-3.8zM14.3 5.3c.6-.8 1-1.9.9-3-.9 0-2 .6-2.7 1.4-.6.7-1.1 1.8-.9 2.9 1 0 2.1-.5 2.7-1.3z"/></svg><span>Download on the App&nbsp;Store</span></a>
-      </div>
-      <div class="foot-side">
-        <ul class="foot-social">
-          <li><a href="https://www.instagram.com/brandfounder.ai/" target="_blank" rel="noopener noreferrer" aria-label="BrandFounder on Instagram"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.2c3.2 0 3.6 0 4.9.07 1.2.05 1.8.25 2.2.42.6.22 1 .48 1.4.9.4.4.7.8.9 1.4.2.4.4 1 .4 2.2.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c0 1.2-.2 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1 .4-2.2.4-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2 0-1.8-.2-2.2-.4-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.4-.4-1-.4-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c0-1.2.2-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1-.4 2.2-.4C8.4 2.2 8.8 2.2 12 2.2Zm0 3.1A6.7 6.7 0 1 0 18.7 12 6.7 6.7 0 0 0 12 5.3Zm0 11A4.3 4.3 0 1 1 16.3 12 4.3 4.3 0 0 1 12 16.3Zm6.9-11.2a1.6 1.6 0 1 1-1.6-1.6 1.6 1.6 0 0 1 1.6 1.6Z"/></svg></a></li>
-          <li><a href="https://www.tiktok.com/@brandfounder.ai" target="_blank" rel="noopener noreferrer" aria-label="BrandFounder on TikTok"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.6 5.8a4.3 4.3 0 0 1-1-2.8h-3v11.6a2.5 2.5 0 1 1-1.8-2.4V9.1a5.6 5.6 0 1 0 4.8 5.5V8.9a7.2 7.2 0 0 0 4.2 1.4V7.3a4.3 4.3 0 0 1-3.2-1.5Z"/></svg></a></li>
+  <footer class="site-foot">
+    <div class="wrap sf">
+      <a class="sf-logo" href="../index.html" aria-label="BrandFounder home">
+        <picture>
+          <source srcset="../images/logos/logo_white.png" media="(prefers-color-scheme: dark)" data-theme-dark-source />
+          <img src="../images/logos/logo_black.png" alt="" width="30" height="30" loading="lazy" decoding="async" />
+        </picture>
+        <span>BrandFounder</span>
+      </a>
+      <p class="sf-line">Turn your idea into a brand <span class="ser">you can actually launch.</span></p>
+      <a class="sf-store" href="https://apps.apple.com/app/id6759218062" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M16.5 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.2-2.8.9-3.5.9s-1.8-.8-3-.8c-1.5 0-2.9.9-3.7 2.3-1.6 2.7-.4 6.8 1.1 9 .8 1.1 1.6 2.3 2.8 2.2 1.1 0 1.6-.7 3-.7s1.8.7 3 .7 2-1.1 2.8-2.1c.9-1.2 1.2-2.4 1.3-2.4-.1 0-2.4-.9-2.4-3.8zM14.3 5.3c.6-.8 1-1.9.9-3-.9 0-2 .6-2.7 1.4-.6.7-1.1 1.8-.9 2.9 1 0 2.1-.5 2.7-1.3z"/></svg>
+        <span>Download on iPhone</span>
+      </a>
+
+      <nav class="sf-nav" aria-label="Footer">
+        <ul>
+          <li><a href="../index.html#how-it-works">How it works</a></li>
+          <li><a href="../index.html#examples">Examples</a></li>
+          <li><a href="../index.html#inside">What you get</a></li>
+          <li><a href="../index.html#preview">Free preview</a></li>
+          <li><a href="../index.html#faq">FAQ</a></li>
         </ul>
-        <a class="foot-mail" href="mailto:support@brandfounder.ai">support@brandfounder.ai</a>
+        <ul class="sf-nav-2">
+          <li><a href="mailto:support@brandfounder.ai">support@brandfounder.ai</a></li>
+          <li><a href="https://www.instagram.com/brandfounder.ai/" target="_blank" rel="noopener noreferrer">Instagram</a></li>
+          <li><a href="https://www.tiktok.com/@brandfounder.ai" target="_blank" rel="noopener noreferrer">TikTok</a></li>
+          <li><a href="privacy-policy.html">Privacy</a></li>
+          <li><a href="terms.html" aria-current="page">Terms</a></li>
+        </ul>
+      </nav>
+
+      <div class="sf-bar">
+        <p>© <span id="year">2026</span> BrandFounder</p>
       </div>
     </div>
-    <div class="wrap foot-bar"><p>© <span id="year">2026</span> BrandFounder</p><nav class="foot-legal" aria-label="Legal"><a href="privacy-policy.html">Privacy</a><a href="terms.html" aria-current="page">Terms</a><a href="../index.html">Home</a></nav></div>
   </footer>
 </body>
 </html>

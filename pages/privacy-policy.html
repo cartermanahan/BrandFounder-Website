@@ -6,16 +6,16 @@
   <meta name="color-scheme" content="dark light" />
   <meta name="theme-color" content="#07070d" media="(prefers-color-scheme: dark)" />
   <meta name="theme-color" content="#fbfbfc" media="(prefers-color-scheme: light)" />
-  <title>BrandFounder — Privacy Policy</title>
+  <title>Privacy Policy | BrandFounder</title>
   <meta name="description" content="How BrandFounder collects, uses, stores and protects information across the BrandFounder website, iOS app and related services." />
   <link rel="canonical" href="https://brandfounder.ai/pages/privacy-policy.html" />
-  <meta property="og:title" content="BrandFounder — Privacy Policy" />
+  <meta property="og:title" content="Privacy Policy | BrandFounder" />
   <meta property="og:description" content="How BrandFounder handles information across the website, iOS app and related services." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://brandfounder.ai/pages/privacy-policy.html" />
   <meta property="og:image" content="https://brandfounder.ai/images/logos/brandfounder-logo.png" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="BrandFounder — Privacy Policy" />
+  <meta name="twitter:title" content="Privacy Policy | BrandFounder" />
   <meta name="twitter:description" content="How BrandFounder handles information across the website, iOS app and related services." />
   <meta name="twitter:image" content="https://brandfounder.ai/images/logos/brandfounder-logo.png" />
   <script>
@@ -26,12 +26,12 @@
       } catch (error) { console.warn('Theme preference unavailable.', error); }
     })();
   </script>
-  <link rel="stylesheet" href="../styles/fonts.css" />
-  <link rel="stylesheet" href="../styles/site.css" />
-  <link rel="stylesheet" href="../styles/navbar.css" />
+  <link rel="stylesheet" href="../styles/fonts.css?v=15" />
+  <link rel="stylesheet" href="../styles/site.css?v=15" />
+  <link rel="stylesheet" href="../styles/navbar.css?v=15" />
   <link rel="icon" type="image/png" href="../images/icons/brandfounder-icon.png" />
-  <script src="../scripts/navbar.js" defer></script>
-  <script src="../scripts/site.js" defer></script>
+  <script src="../scripts/navbar.js?v=15" defer></script>
+  <script src="../scripts/site.js?v=15" defer></script>
 </head>
 <body class="legal-page">
   <a class="skip-link" href="#main">Skip to content</a>
@@ -40,54 +40,91 @@
       <button class="navbar-brand" id="navbar-brand-toggle" type="button" aria-label="Open navigation" aria-controls="nav-menu" aria-expanded="true">
         <picture>
           <source srcset="../images/logos/logo_white.png" media="(prefers-color-scheme: dark)" data-theme-dark-source />
-          <img class="logo-icon" src="../images/logos/logo_gradient.png" data-theme-light-src="../images/logos/logo_gradient.png" data-theme-dark-src="../images/logos/logo_white.png" alt="" width="28" height="28" decoding="async" />
+          <img src="../images/logos/logo_gradient.png" alt="" class="logo-icon" width="28" height="28" decoding="async" />
         </picture>
       </button>
+
       <div class="navbar-pill">
         <nav class="nav-links" aria-label="Primary">
-          <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Toggle menu" aria-controls="nav-menu" aria-expanded="false"><span></span><span></span><span></span></button>
+          <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Toggle menu" aria-controls="nav-menu" aria-expanded="false">
+            <span></span><span></span><span></span>
+          </button>
           <ul id="nav-menu">
+            <li><a href="../index.html">Home</a></li>
             <li><a href="../index.html#how-it-works">How it works</a></li>
-            <li><a href="../index.html#inside">What you get</a></li>
             <li><a href="../index.html#examples">Examples</a></li>
-            <li><a href="../index.html#preview">Try it free</a></li>
+            <li><a href="../index.html#inside">What you get</a></li>
+            <li><a href="../index.html#preview">Free preview</a></li>
             <li><a href="../index.html#faq">FAQ</a></li>
-            <li><a href="privacy-policy.html" aria-current="page">Privacy</a></li>
-            <li><a href="terms.html">Terms</a></li>
+            <li class="nav-legal"><a href="privacy-policy.html" aria-current="page">Privacy</a></li>
+            <li class="nav-legal"><a href="terms.html">Terms</a></li>
           </ul>
         </nav>
-        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to dark mode" title="Switch to dark mode"><span class="theme-toggle-icon" aria-hidden="true"></span></button>
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to dark mode" title="Switch to dark mode">
+          <span class="theme-toggle-icon" aria-hidden="true"></span>
+        </button>
       </div>
-      <a href="https://apps.apple.com/app/id6759218062" class="navbar-cta" aria-label="Get BrandFounder on the App Store" target="_blank" rel="noopener noreferrer">Launch your brand</a>
+
+      <a class="navbar-cta" href="https://apps.apple.com/app/id6759218062" target="_blank" rel="noopener noreferrer">Launch your brand</a>
     </div>
   </header>
 
   <main id="main">
     <section class="legal-hero">
-      <div class="container"><div class="legal-hero-inner">
-        <p class="legal-breadcrumb"><a href="../index.html">Home</a> / Privacy Policy</p>
-        <h1>Privacy Policy</h1>
+      <div class="container legal-hero-inner">
+        <nav class="legal-switch" aria-label="Legal documents"><a href="privacy-policy.html" aria-current="page">Privacy Policy</a><a href="terms.html">Terms of Use</a></nav>
+        <h1>Privacy <span class="ser">Policy</span></h1>
         <p class="legal-hero-sub">This Policy explains how BrandFounder collects, uses, stores and protects information when you use the website, iOS app and related services.</p>
-        <p class="legal-meta">Contact: <a href="mailto:support@brandfounder.ai">support@brandfounder.ai</a><br />Last updated: 29 September 2026</p>
-      </div></div>
+        <dl class="legal-meta">
+          <div><dt>Last updated</dt><dd>29 September 2026</dd></div>
+          <div><dt>Questions</dt><dd><a href="mailto:support@brandfounder.ai">support@brandfounder.ai</a></dd></div>
+        </dl>
+      </div>
     </section>
 
-    <section class="legal-content"><div class="container">
+    <section class="legal-content">
+      <div class="container legal-layout">
+        <aside class="legal-toc" aria-label="On this page">
+          <p class="legal-toc-title">On this page</p>
+          <ol>
+            <li><a href="#who-we-are">1. Who we are</a></li>
+            <li><a href="#scope">2. Scope</a></li>
+            <li><a href="#information-we-collect">3. Information we collect</a></li>
+            <li><a href="#how-we-use-information">4. How we use information</a></li>
+            <li><a href="#ai-processing">5. AI processing</a></li>
+            <li><a href="#payments-and-entitlement-verification">6. Payments and entitlement verification</a></li>
+            <li><a href="#website-technology">7. Website technology</a></li>
+            <li><a href="#legal-bases">8. Legal bases</a></li>
+            <li><a href="#recipients-and-service-providers">9. Recipients and service providers</a></li>
+            <li><a href="#international-transfers">10. International transfers</a></li>
+            <li><a href="#retention">11. Retention</a></li>
+            <li><a href="#your-rights">12. Your rights</a></li>
+            <li><a href="#permanent-account-deletion">13. Permanent account deletion</a></li>
+            <li><a href="#your-app-controls">14. Your app controls</a></li>
+            <li><a href="#security">15. Security</a></li>
+            <li><a href="#children">16. Children</a></li>
+            <li><a href="#third-party-links">17. Third-party links</a></li>
+            <li><a href="#changes-to-this-policy">18. Changes to this Policy</a></li>
+            <li><a href="#contact">19. Contact</a></li>
+          </ol>
+        </aside>
+        <div class="legal-body">
+
       <article class="legal-section">
-        <h2>1. Who we are</h2>
+        <h2 id="who-we-are">1. Who we are</h2>
         <p>BrandFounder is operated by Carter Manahan, trading as BrandFounder, a sole trader based in the United Kingdom, who is the controller of personal data processed for the BrandFounder website, iOS app and related services.</p>
         <p>In this Policy, “BrandFounder”, “we”, “us” and “our” refer to the operator named above, trading as BrandFounder. “You” and “your” refer to the person using the services.</p>
       </article>
 
       <article class="legal-section">
-        <h2>2. Scope</h2>
+        <h2 id="scope">2. Scope</h2>
         <p>This Policy covers personal data collected through:</p>
         <ul><li>the BrandFounder website;</li><li>the BrandFounder iOS app;</li><li>support messages; and</li><li>account, purchase, generation and storage features operated for BrandFounder.</li></ul>
         <p>Apple, Google and other services you choose may also process information as independent controllers under their own notices. This Policy explains BrandFounder’s role and does not replace those notices.</p>
       </article>
 
       <article class="legal-section">
-        <h2>3. Information we collect</h2>
+        <h2 id="information-we-collect">3. Information we collect</h2>
         <h3>3.1 Account and sign-in information</h3>
         <p>This may include your email address, Firebase user ID, sign-in provider, account timestamps and related identifiers. If you use Google Sign-In, we may receive the name and email information made available by Google. If you use Sign in with Apple, we receive the Apple credential information made available for authentication; Apple may provide a relay email address instead of your personal address.</p>
         <h3>3.2 Brand, project and user content</h3>
@@ -111,12 +148,12 @@
       </article>
 
       <article class="legal-section">
-        <h2>4. How we use information</h2>
+        <h2 id="how-we-use-information">4. How we use information</h2>
         <ul><li>create, authenticate, secure and manage accounts;</li><li>store, sync, display, edit and retrieve brands, projects and assets;</li><li>send the inputs needed to generate the AI feature you request;</li><li>verify purchases, manage entitlements, deliver paid outputs and support eligible retries or restores;</li><li>respond to support requests and investigate delivery or generation failures;</li><li>measure product use when you have enabled optional analytics;</li><li>store optional shared inputs when you have enabled that separate setting;</li><li>diagnose and fix crashes and failed purchases, generations or deliveries using crash and error reports when you have enabled them;</li><li>detect errors, fraud, abuse, misuse and security incidents; and</li><li>meet legal obligations and enforce the Terms of Use.</li></ul>
       </article>
 
       <article class="legal-section">
-        <h2>5. AI processing</h2>
+        <h2 id="ai-processing">5. AI processing</h2>
         <p>Before the first AI request on a device, BrandFounder shows a just-in-time disclosure explaining what is sent and asks you to allow AI processing. If you allow it and request an AI feature, the text, settings, project context and selected reference images needed for that request may be sent securely through BrandFounder’s Firebase-based backend to the OpenAI API.</p>
         <p>This processing may support brand summaries, positioning, vocabulary, market and pricing starting points, promotion guidance, launch planning, palettes, logos and other visuals. It is necessary to perform the AI generation you requested. It is separate from the optional “Share inputs to improve results” setting.</p>
         <p>OpenAI states that API inputs and outputs are not used to train or improve its models by default unless the API customer explicitly opts in. OpenAI’s default abuse-monitoring logs may contain prompts, responses and related metadata and are generally retained for up to 30 days. OpenAI identifies limited exceptions, including longer retention where required by law or reasonably necessary to protect its services or third parties. BrandFounder does not claim Zero Data Retention. See <a href="https://developers.openai.com/api/docs/guides/your-data" target="_blank" rel="noopener noreferrer">OpenAI’s API data controls</a>.</p>
@@ -124,43 +161,43 @@
       </article>
 
       <article class="legal-section">
-        <h2>6. Payments and entitlement verification</h2>
+        <h2 id="payments-and-entitlement-verification">6. Payments and entitlement verification</h2>
         <p>Apple processes in-app payments. BrandFounder processes only the purchase and entitlement information needed to confirm access, avoid duplicate charging, recover eligible interrupted deliveries and restore purchases. Apple handles the payment transaction and any payment data it collects under Apple’s own terms and privacy notice.</p>
       </article>
 
       <article class="legal-section">
-        <h2>7. Website technology</h2>
+        <h2 id="website-technology">7. Website technology</h2>
         <p>The public website is hosted on GitHub Pages. GitHub and its delivery infrastructure may process ordinary web-request and security information, such as an IP address, browser details, requested URL, timestamps and error or abuse signals, to deliver and protect the site.</p>
         <p>The website does not include analytics, advertising pixels, fingerprinting, contact forms or non-essential cookies. Instrument Serif, GSAP and the site’s other visual assets are self-hosted, so viewing a page does not require a font or animation request to Google Fonts or jsDelivr.</p>
         <p>If you use the theme control, the website stores the selected light or dark theme in your browser’s local storage under <code>brandfounder-theme</code>. This preference remains on your device until you change it, clear browser data or storage is unavailable. It is used only to remember the theme you selected and is not sent to BrandFounder.</p>
       </article>
 
       <article class="legal-section">
-        <h2>8. Legal bases</h2>
+        <h2 id="legal-bases">8. Legal bases</h2>
         <ul><li><strong>Contract:</strong> to create and manage your account, store projects, perform requested AI generation, verify a purchase and deliver the service you ask for.</li><li><strong>Legitimate interests:</strong> to operate, secure, maintain, debug and support BrandFounder, prevent abuse, keep backups and keep proportionate business records, balanced against your rights.</li><li><strong>Consent:</strong> for optional usage analytics, optional crash reporting and optional input sharing. Each is off until you turn it on, and you can withdraw any of these choices in the app. The just-in-time AI choice controls whether a requested feature sends data to OpenAI; once requested, the generation is processed to perform the service.</li><li><strong>Legal obligation:</strong> where processing is required by law, including applicable accounting, tax, consumer or regulatory duties.</li></ul>
       </article>
 
       <article class="legal-section">
-        <h2>9. Recipients and service providers</h2>
+        <h2 id="recipients-and-service-providers">9. Recipients and service providers</h2>
         <p>We do not sell personal data. Depending on the feature you use, relevant information may be processed by:</p>
         <ul><li><strong>Apple</strong> for App Store distribution, in-app purchases, refund handling and Sign in with Apple;</li><li><strong>Google Sign-In</strong> when you choose Google authentication;</li><li><strong>Firebase / Google</strong> for Authentication, Firestore, Storage, Cloud Functions, App Check, optional Crashlytics crash and error reporting, database backups, operational infrastructure and optional Analytics;</li><li><strong>OpenAI</strong> as the API provider for requested AI text and image generation; and</li><li><strong>GitHub Pages</strong> and its delivery infrastructure for hosting and serving the public website.</li></ul>
         <p>We may also disclose information where reasonably necessary to comply with law or a binding request, protect rights and safety, investigate fraud or misuse, or enforce our Terms.</p>
       </article>
 
       <article class="legal-section">
-        <h2>10. International transfers</h2>
+        <h2 id="international-transfers">10. International transfers</h2>
         <p>BrandFounder is operated from the United Kingdom, but Apple, Google/Firebase, OpenAI, GitHub and their infrastructure may process information in other countries. The location can depend on the provider, service and configuration in use.</p>
         <p>Where UK law requires a transfer mechanism, we will rely on an applicable lawful safeguard made available for the relevant transfer, which may include UK adequacy regulations or approved contractual protections. We do not claim that one particular safeguard applies to every provider or transfer. Contact us if you would like more information about a relevant transfer.</p>
       </article>
 
       <article class="legal-section">
-        <h2>11. Retention</h2>
+        <h2 id="retention">11. Retention</h2>
         <ul><li>Account, brand, project and stored-asset data is generally kept while your account is active and until you delete the content or account.</li><li>Generated outputs are generally kept while associated with your saved account or projects.</li><li>Optional shared inputs are kept for the improvement purpose while associated with your account, unless removed through account deletion or no longer reasonably needed.</li><li>Optional analytics event data is kept by Firebase Analytics for up to 2 months; turning analytics off stops future collection but does not necessarily erase events already processed.</li><li>Crash and error reports are kept by Firebase Crashlytics for up to 90 days.</li><li>Temporary generation jobs are deleted automatically about 7 days after they are created, and rate-limit records a short time after the limit period ends.</li><li>Database backups are kept for up to 7 days for point-in-time recovery and up to 14 weeks for weekly backups, then deleted automatically. Backups are used only to recover from data loss or corruption.</li><li>Support messages are kept for as long as reasonably needed to resolve the request, maintain support history and handle disputes or legal obligations.</li><li>Operational and security records are kept for as long as reasonably needed to diagnose failures, prevent abuse and protect the service, taking account of provider retention settings.</li><li>Purchase and entitlement records are kept while needed to deliver or restore the purchase, prevent fraud, handle disputes and meet accounting or legal duties.</li><li>OpenAI’s default API abuse-monitoring retention is described in section 5 and is separate from BrandFounder’s storage of projects and outputs.</li></ul>
         <p>Where no fixed period is stated, we consider whether the account remains active, whether the record is still needed for the purpose collected, the sensitivity of the data, security and dispute risks, provider controls and applicable legal duties.</p>
       </article>
 
       <article class="legal-section">
-        <h2>12. Your rights</h2>
+        <h2 id="your-rights">12. Your rights</h2>
         <p>Subject to applicable law and exemptions, you may have the right to:</p>
         <ul><li>be informed about processing;</li><li>request access to personal data and a copy of it;</li><li>request correction of inaccurate or incomplete data;</li><li>request deletion in certain circumstances;</li><li>request restriction of processing in certain circumstances;</li><li>object to processing based on legitimate interests or for direct marketing;</li><li>receive certain data in a portable format;</li><li>withdraw consent at any time where processing relies on consent; and</li><li>ask about safeguards for an applicable international transfer.</li></ul>
         <p>BrandFounder does not make solely automated decisions that produce legal or similarly significant effects about you. To exercise a right, email <a href="mailto:support@brandfounder.ai">support@brandfounder.ai</a>. We may ask for proportionate information to verify your identity. Withdrawing consent does not affect processing that was lawful before withdrawal.</p>
@@ -168,7 +205,7 @@
       </article>
 
       <article class="legal-section">
-        <h2>13. Permanent account deletion</h2>
+        <h2 id="permanent-account-deletion">13. Permanent account deletion</h2>
         <p>BrandFounder includes permanent in-app account deletion. While you are authenticated, the deletion service removes BrandFounder data associated with your user ID from active first-party systems, including:</p>
         <ul><li>your user record, saved brands and brand-storage paths;</li><li>saved projects and stored brand assets;</li><li>AI jobs and AI usage events;</li><li>optional shared inputs and onboarding records;</li><li>BrandFounder purchase-entitlement records; and</li><li>the Firebase Authentication account.</li></ul>
         <p>If Sign in with Apple is linked, the app asks you to confirm that identity so the Apple authorisation can be revoked where applicable. The app also clears local onboarding drafts, cached brand data, optional input-sharing and analytics preferences, and the AI-processing disclosure choice, and resets the device's analytics identifier.</p>
@@ -177,42 +214,63 @@
       </article>
 
       <article class="legal-section">
-        <h2>14. Your app controls</h2>
+        <h2 id="your-app-controls">14. Your app controls</h2>
         <p>Firebase Analytics is off by default and starts only if you turn on “Share usage analytics”. You can turn it off again to stop future collection. The separate “Share inputs to improve results” setting is also off by default and is not required to use BrandFounder.</p>
         <p>“Share crash reports” is also off by default. If you turn it on, crash and error reports help us find and fix crashes and failed purchases or generations. You can turn it off again in Settings at any time.</p>
         <p>Turning off AI processing prevents new AI requests until you allow it again. It does not automatically delete projects or outputs already stored; use the in-app deletion controls where you want those removed.</p>
       </article>
 
       <article class="legal-section">
-        <h2>15. Security</h2>
+        <h2 id="security">15. Security</h2>
         <p>We use reasonable technical and organisational measures designed to protect information, including authenticated access controls, encrypted network transmission, Firebase App Check and integrity controls where configured, server-side secret handling, rate limiting, regular database backups with point-in-time recovery, and managed cloud infrastructure.</p>
         <p>No online service can guarantee absolute security. Please keep your sign-in method secure and contact us if you suspect unauthorised account access.</p>
       </article>
 
-      <article class="legal-section"><h2>16. Children</h2><p>BrandFounder is not directed at children. We do not knowingly collect a child’s personal data where parental consent would be required. If you believe a child has provided information inappropriately, contact us so we can review it.</p></article>
-      <article class="legal-section"><h2>17. Third-party links</h2><p>The app and website may link to Apple, the ICO and other third-party services. A third party controls its own site, terms and privacy practices. Review the relevant notice before providing information directly to that service.</p></article>
-      <article class="legal-section"><h2>18. Changes to this Policy</h2><p>We may update this Policy when the product, providers or legal requirements change. We will update the date above and provide appropriate notice where a change materially affects how personal data is used. We will request a new choice where the law requires it.</p></article>
-      <article class="legal-section"><h2>19. Contact</h2><p>BrandFounder<br />4th Floor, Silverstream House, 45 Fitzroy Street, London W1T 6EB, United Kingdom<br />Email: <a href="mailto:support@brandfounder.ai">support@brandfounder.ai</a></p><p class="legal-links">You can also read the <a href="terms.html">BrandFounder Terms of Use</a>.</p></article>
-      <div class="legal-footer-links"><a href="../index.html">Back to BrandFounder home</a></div>
-    </div></section>
+      <article class="legal-section"><h2 id="children">16. Children</h2><p>BrandFounder is not directed at children. We do not knowingly collect a child’s personal data where parental consent would be required. If you believe a child has provided information inappropriately, contact us so we can review it.</p></article>
+      <article class="legal-section"><h2 id="third-party-links">17. Third-party links</h2><p>The app and website may link to Apple, the ICO and other third-party services. A third party controls its own site, terms and privacy practices. Review the relevant notice before providing information directly to that service.</p></article>
+      <article class="legal-section"><h2 id="changes-to-this-policy">18. Changes to this Policy</h2><p>We may update this Policy when the product, providers or legal requirements change. We will update the date above and provide appropriate notice where a change materially affects how personal data is used. We will request a new choice where the law requires it.</p></article>
+      <article class="legal-section"><h2 id="contact">19. Contact</h2><p>BrandFounder<br />4th Floor, Silverstream House, 45 Fitzroy Street, London W1T 6EB, United Kingdom<br />Email: <a href="mailto:support@brandfounder.ai">support@brandfounder.ai</a></p><p class="legal-links">You can also read the <a href="terms.html">BrandFounder Terms of Use</a>.</p></article>
+        </div>
+      </div>
+    </section>
   </main>
 
-  <footer class="foot">
-    <div class="wrap foot-top">
-      <div class="foot-brand">
-        <picture><source srcset="../images/logos/logo_white.png" media="(prefers-color-scheme: dark)" data-theme-dark-source /><img src="../images/logos/logo_black.png" alt="BrandFounder" width="38" height="38" loading="lazy" decoding="async" /></picture>
-        <p class="foot-line">Turn your idea into a brand <span class="ser">you can actually launch.</span></p>
-        <a class="foot-store" href="https://apps.apple.com/app/id6759218062" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M16.5 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.2-2.8.9-3.5.9s-1.8-.8-3-.8c-1.5 0-2.9.9-3.7 2.3-1.6 2.7-.4 6.8 1.1 9 .8 1.1 1.6 2.3 2.8 2.2 1.1 0 1.6-.7 3-.7s1.8.7 3 .7 2-1.1 2.8-2.1c.9-1.2 1.2-2.4 1.3-2.4-.1 0-2.4-.9-2.4-3.8zM14.3 5.3c.6-.8 1-1.9.9-3-.9 0-2 .6-2.7 1.4-.6.7-1.1 1.8-.9 2.9 1 0 2.1-.5 2.7-1.3z"/></svg><span>Download on the App&nbsp;Store</span></a>
-      </div>
-      <div class="foot-side">
-        <ul class="foot-social">
-          <li><a href="https://www.instagram.com/brandfounder.ai/" target="_blank" rel="noopener noreferrer" aria-label="BrandFounder on Instagram"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.2c3.2 0 3.6 0 4.9.07 1.2.05 1.8.25 2.2.42.6.22 1 .48 1.4.9.4.4.7.8.9 1.4.2.4.4 1 .4 2.2.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c0 1.2-.2 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1 .4-2.2.4-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2 0-1.8-.2-2.2-.4-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.4-.4-1-.4-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c0-1.2.2-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1-.4 2.2-.4C8.4 2.2 8.8 2.2 12 2.2Zm0 3.1A6.7 6.7 0 1 0 18.7 12 6.7 6.7 0 0 0 12 5.3Zm0 11A4.3 4.3 0 1 1 16.3 12 4.3 4.3 0 0 1 12 16.3Zm6.9-11.2a1.6 1.6 0 1 1-1.6-1.6 1.6 1.6 0 0 1 1.6 1.6Z"/></svg></a></li>
-          <li><a href="https://www.tiktok.com/@brandfounder.ai" target="_blank" rel="noopener noreferrer" aria-label="BrandFounder on TikTok"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.6 5.8a4.3 4.3 0 0 1-1-2.8h-3v11.6a2.5 2.5 0 1 1-1.8-2.4V9.1a5.6 5.6 0 1 0 4.8 5.5V8.9a7.2 7.2 0 0 0 4.2 1.4V7.3a4.3 4.3 0 0 1-3.2-1.5Z"/></svg></a></li>
+  <footer class="site-foot">
+    <div class="wrap sf">
+      <a class="sf-logo" href="../index.html" aria-label="BrandFounder home">
+        <picture>
+          <source srcset="../images/logos/logo_white.png" media="(prefers-color-scheme: dark)" data-theme-dark-source />
+          <img src="../images/logos/logo_black.png" alt="" width="30" height="30" loading="lazy" decoding="async" />
+        </picture>
+        <span>BrandFounder</span>
+      </a>
+      <p class="sf-line">Turn your idea into a brand <span class="ser">you can actually launch.</span></p>
+      <a class="sf-store" href="https://apps.apple.com/app/id6759218062" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M16.5 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.2-2.8.9-3.5.9s-1.8-.8-3-.8c-1.5 0-2.9.9-3.7 2.3-1.6 2.7-.4 6.8 1.1 9 .8 1.1 1.6 2.3 2.8 2.2 1.1 0 1.6-.7 3-.7s1.8.7 3 .7 2-1.1 2.8-2.1c.9-1.2 1.2-2.4 1.3-2.4-.1 0-2.4-.9-2.4-3.8zM14.3 5.3c.6-.8 1-1.9.9-3-.9 0-2 .6-2.7 1.4-.6.7-1.1 1.8-.9 2.9 1 0 2.1-.5 2.7-1.3z"/></svg>
+        <span>Download on iPhone</span>
+      </a>
+
+      <nav class="sf-nav" aria-label="Footer">
+        <ul>
+          <li><a href="../index.html#how-it-works">How it works</a></li>
+          <li><a href="../index.html#examples">Examples</a></li>
+          <li><a href="../index.html#inside">What you get</a></li>
+          <li><a href="../index.html#preview">Free preview</a></li>
+          <li><a href="../index.html#faq">FAQ</a></li>
         </ul>
-        <a class="foot-mail" href="mailto:support@brandfounder.ai">support@brandfounder.ai</a>
+        <ul class="sf-nav-2">
+          <li><a href="mailto:support@brandfounder.ai">support@brandfounder.ai</a></li>
+          <li><a href="https://www.instagram.com/brandfounder.ai/" target="_blank" rel="noopener noreferrer">Instagram</a></li>
+          <li><a href="https://www.tiktok.com/@brandfounder.ai" target="_blank" rel="noopener noreferrer">TikTok</a></li>
+          <li><a href="privacy-policy.html" aria-current="page">Privacy</a></li>
+          <li><a href="terms.html">Terms</a></li>
+        </ul>
+      </nav>
+
+      <div class="sf-bar">
+        <p>© <span id="year">2026</span> BrandFounder</p>
       </div>
     </div>
-    <div class="wrap foot-bar"><p>© <span id="year">2026</span> BrandFounder</p><nav class="foot-legal" aria-label="Legal"><a href="privacy-policy.html" aria-current="page">Privacy</a><a href="terms.html">Terms</a><a href="../index.html">Home</a></nav></div>
   </footer>
 </body>
 </html>

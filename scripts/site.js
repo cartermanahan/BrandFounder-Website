@@ -1,28 +1,13 @@
 /* =====================================================================
    site.js — BrandFounder
-   One rAF-gated scroll pass. Everything else is IntersectionObserver.
-   No third-party libraries.
+   IntersectionObserver for reveals and the demo; Web Animations for
+   the FAQ. No third-party libraries, no scroll listeners.
    ===================================================================== */
 (() => {
     'use strict';
 
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
-    const viewportH = () => document.documentElement.clientHeight || window.innerHeight;
-
-    /* Callbacks that want a slot in the single scroll pass. */
-    const scrollJobs = [];
-    let ticking = false;
-
-    function runJobs() {
-        ticking = false;
-        for (let i = 0; i < scrollJobs.length; i++) scrollJobs[i]();
-    }
-    function onScroll() {
-        if (ticking) return;
-        ticking = true;
-        window.requestAnimationFrame(runJobs);
-    }
+    const hasIO = 'IntersectionObserver' in window;
 
     /* -----------------------------------------------------------
        Reveal on appear
@@ -31,7 +16,11 @@
         const items = document.querySelectorAll('[data-r], [data-r-group]');
         if (!items.length) return;
 
-        if (reduced.matches || !('IntersectionObserver' in window)) {
+        document.querySelectorAll('[data-r-group]').forEach(group => {
+            [...group.children].forEach((child, i) => child.style.setProperty('--i', String(i)));
+        });
+
+        if (reduced.matches || !hasIO) {
             items.forEach(el => el.classList.add('is-in'));
             return;
         }
@@ -42,7 +31,7 @@
                 entry.target.classList.add('is-in');
                 io.unobserve(entry.target);
             }
-        }, { rootMargin: '0px 0px -10% 0px', threshold: 0.1 });
+        }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
 
         items.forEach(el => {
             const d = el.getAttribute('data-r-d');
@@ -60,293 +49,474 @@
     }
 
     /* -----------------------------------------------------------
-       Ambient light + looping icon cycles: idle while off-screen
+       "How it works" — the idea types itself in, then the brand
+       builds around it. Without JS (or with reduced motion) the
+       built state is simply shown.
        ----------------------------------------------------------- */
-    function initAmbient() {
-        const hosts = document.querySelectorAll('[data-bloom], [data-manifesto], [data-marquee]');
-        if (!hosts.length || !('IntersectionObserver' in window)) return;
+    function initDemo() {
+        const demo = document.querySelector('[data-demo]');
+        if (!demo) return;
+
+        const box = demo.querySelector('.tbox');
+        const field = demo.querySelector('.tbox-text');
+        const source = demo.querySelector('[data-full]');
+        if (!box || !field || !source) return;
+
+        const full = source.textContent.trim();
+
+        if (reduced.matches || !hasIO) {
+            field.textContent = full;
+            demo.classList.add('is-built');
+            return;
+        }
+
+        demo.classList.add('is-armed');
+        field.textContent = '';
+
+        const CPS = 46;
+
+        function type() {
+            box.classList.add('is-typing');
+            let start = 0;
+
+            const step = (now) => {
+                if (!start) start = now;
+                const n = Math.min(full.length, Math.round(((now - start) / 1000) * CPS));
+                field.textContent = full.slice(0, n);
+                if (n < full.length) {
+                    window.requestAnimationFrame(step);
+                    return;
+                }
+                window.setTimeout(() => {
+                    box.classList.remove('is-typing');
+                    demo.classList.add('is-built');
+                }, 280);
+            };
+            window.requestAnimationFrame(step);
+        }
 
         const io = new IntersectionObserver((entries) => {
-            for (const entry of entries) {
-                entry.target.toggleAttribute('data-paused', !entry.isIntersecting);
-            }
-        }, { rootMargin: '120px 0px' });
+            if (!entries.some(e => e.isIntersecting)) return;
+            io.disconnect();
+            window.setTimeout(type, 220);
+        }, { rootMargin: '0px 0px -18% 0px', threshold: 0.2 });
+        io.observe(demo);
 
-        hosts.forEach(el => io.observe(el));
+        // idle the floating chips while the section is off-screen
+        const idle = new IntersectionObserver((entries) => {
+            for (const entry of entries) entry.target.toggleAttribute('data-paused', !entry.isIntersecting);
+        }, { rootMargin: '120px 0px' });
+        idle.observe(demo);
     }
 
     /* -----------------------------------------------------------
-       Logo marquee
+       Tabs — shared by the example switcher and the pack tabs.
+       Panels stay in the DOM (stacked in one grid cell) so the
+       switch can cross-fade; inactive ones are inert.
        ----------------------------------------------------------- */
-    function initMarquee() {
-        const marquee = document.querySelector('[data-marquee]');
-        if (!marquee) return;
+    function makeTabs(tablist, tabs, panels, onChange) {
+        let index = Math.max(0, tabs.findIndex(t => t.classList.contains('is-active')));
+        const leaveTimers = new WeakMap();
 
-        // Each row animates by -50%, so the row must be exactly two identical
-        // halves and each half must be at least as wide as the track. Rows with
-        // fewer logos need the set repeated more than once to cover that width,
-        // otherwise the loop leaves a visible gap on wide screens.
-        const buildRow = row => {
-            const set = row.querySelector('.marquee-set');
-            if (!set) return;
+        panels.forEach((panel, i) => {
+            panel.hidden = false;
+            panel.inert = i !== index;
+        });
 
-            row.querySelectorAll('.marquee-set').forEach((el, i) => { if (i) el.remove(); });
+        function centreTab(tab) {
+            if (tablist.scrollWidth <= tablist.clientWidth + 1) return;
+            const left = tab.offsetLeft - (tablist.clientWidth - tab.offsetWidth) / 2;
+            tablist.scrollTo({ left, behavior: reduced.matches ? 'auto' : 'smooth' });
+        }
 
-            const setWidth = set.getBoundingClientRect().width;
-            const trackWidth = marquee.getBoundingClientRect().width;
-            if (!setWidth) return;
+        function select(next, opts = {}) {
+            if (next === index || next < 0 || next >= tabs.length) return;
+            const prevPanel = panels[index];
 
-            const perHalf = Math.max(1, Math.ceil(trackWidth / setWidth));
-            const total = perHalf * 2;
+            tabs[index].classList.remove('is-active');
+            tabs[index].setAttribute('aria-selected', 'false');
+            tabs[index].tabIndex = -1;
+            prevPanel.classList.remove('is-active');
+            prevPanel.classList.add('is-leaving');
+            prevPanel.inert = true;
+            window.clearTimeout(leaveTimers.get(prevPanel));
+            leaveTimers.set(prevPanel, window.setTimeout(() => prevPanel.classList.remove('is-leaving'), 650));
 
-            for (let i = 1; i < total; i += 1) {
-                const clone = set.cloneNode(true);
-                clone.setAttribute('aria-hidden', 'true');
-                clone.querySelectorAll('img').forEach(img => { img.alt = ''; });
-                row.appendChild(clone);
-            }
-            // Keep a constant scroll speed: the row travels one half-width per
-            // cycle, and that half grows with the number of repeats.
-            const halfWidth = perHalf * setWidth;
-            row.style.animationDuration = `${(halfWidth / 26).toFixed(1)}s`;
+            index = next;
+            const tab = tabs[index];
+            const panel = panels[index];
+            tab.classList.add('is-active');
+            tab.setAttribute('aria-selected', 'true');
+            tab.tabIndex = 0;
+            panel.classList.remove('is-leaving');
+            panel.classList.add('is-active');
+            panel.inert = false;
+            if (opts.focus) tab.focus();
+            centreTab(tab);
+            onChange && onChange(index, opts);
+        }
 
-            if (!reduced.matches) row.setAttribute('data-run', '');
+        tabs.forEach((tab, i) => tab.addEventListener('click', () => select(i, { user: true })));
+
+        tablist.addEventListener('keydown', (event) => {
+            const keys = { ArrowRight: index + 1, ArrowLeft: index - 1, Home: 0, End: tabs.length - 1 };
+            if (!(event.key in keys)) return;
+            event.preventDefault();
+            const next = (keys[event.key] + tabs.length) % tabs.length;
+            select(next, { user: true, focus: true });
+        });
+
+        return { select, get index() { return index; } };
+    }
+
+    /* -----------------------------------------------------------
+       Examples: a looping carousel. The centred card is in focus and
+       its neighbours peek either side. Every slide gets an offset from
+       the active one, wrapped to -2..2, so the loop never runs out;
+       a slide that wraps round the back jumps without animating while
+       it's out of view. Autoplay is paced by the pill's progress bar.
+       ----------------------------------------------------------- */
+    function initExamples() {
+        const root = document.querySelector('[data-ex]');
+        if (!root) return;
+        const tabs = [...root.querySelectorAll('[role="tab"]')];
+        const slides = [...root.querySelectorAll('[data-ex-slide]')];
+        const tablist = root.querySelector('[role="tablist"]');
+        const viewport = root.querySelector('.ex-viewport');
+        const n = slides.length;
+        if (!n || tabs.length !== n) return;
+
+        let index = 0;
+        let offscreen = true;
+        let hovering = false;
+
+        const wrap = (d) => {
+            let o = ((d % n) + n) % n;
+            if (o > n / 2) o -= n;
+            return o;
         };
 
-        const rows = [...marquee.querySelectorAll('[data-marquee-row]')];
-        const build = () => rows.forEach(buildRow);
-        build();
+        // Every move is continuous: a slide slides by the step size (even
+        // a jump of two), and only teleports while it is invisible, either
+        // after leaving past the edge or before entering from beyond it.
+        let settle = null;
 
-        // Widths change with the viewport (and once the logo images decode).
-        let resizeTimer;
-        window.addEventListener('resize', () => {
-            clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(build, 200);
-        });
-        window.addEventListener('load', build);
-    }
+        function place(slide, off, instant) {
+            if (instant) slide.classList.add('no-anim');
+            slide.style.setProperty('--off', String(off));
+            slide.dataset.off = String(off);
+            slide.classList.toggle('is-active', off === 0);
+            slide.classList.toggle('is-near', Math.abs(off) === 1);
+            slide.classList.toggle('is-far', Math.abs(off) > 1);
+        }
 
-    /* -----------------------------------------------------------
-       Manifesto — words light up as you scroll through them
-       ----------------------------------------------------------- */
-    function initManifesto() {
-        const block = document.querySelector('[data-mani-text]');
-        if (!block) return;
+        function flushSettle() {
+            if (!settle) return;
+            clearTimeout(settle.timer);
+            settle.list.forEach(([slide, off]) => place(slide, off, true));
+            void root.offsetWidth;
+            settle.list.forEach(([slide]) => slide.classList.remove('no-anim'));
+            settle = null;
+        }
 
-        // Wrap bare words, leaving element children (the icon stack) alone.
-        const nodes = [...block.childNodes];
-        nodes.forEach(node => {
-            if (node.nodeType !== Node.TEXT_NODE) return;
-            const parts = node.textContent.split(/(\s+)/);
-            const frag = document.createDocumentFragment();
-            parts.forEach(part => {
-                if (!part.trim()) { frag.appendChild(document.createTextNode(part)); return; }
-                const span = document.createElement('span');
-                span.className = 'mani-w';
-                span.textContent = part;
-                frag.appendChild(span);
+        function layout(first, step) {
+            flushSettle();
+            const later = [];
+            const entering = [];
+            slides.forEach((slide, i) => {
+                const off = wrap(i - index);
+                if (first) { place(slide, off, true); return; }
+                const from = Number(slide.dataset.off);
+                const path = from - step;
+                if (path === off) return place(slide, off, false);
+                if (Math.abs(off) <= 1) {
+                    // comes in from beyond the far edge
+                    place(slide, off + step, true);
+                    entering.push([slide, off]);
+                } else {
+                    // leaves past the edge, then quietly wraps round
+                    place(slide, path, false);
+                    later.push([slide, off]);
+                }
             });
-            block.replaceChild(frag, node);
-        });
-
-        const words = [...block.querySelectorAll('.mani-w')];
-        if (!words.length) return;
-
-        if (reduced.matches) {
-            words.forEach(w => w.classList.add('lit'));
-            return;
-        }
-
-        let lit = 0;
-        scrollJobs.push(() => {
-            const rect = block.getBoundingClientRect();
-            const vh = viewportH();
-            if (rect.bottom < -200 || rect.top > vh + 200) return;
-
-            // Runs from the block entering the lower third to clearing the upper third.
-            const span = rect.height + vh * 0.42;
-            const p = clamp((vh * 0.78 - rect.top) / span, 0, 1);
-            const next = Math.round(p * words.length);
-            if (next === lit) return;
-
-            if (next > lit) { for (let i = lit; i < next; i++) words[i].classList.add('lit'); }
-            else { for (let i = lit - 1; i >= next; i--) words[i].classList.remove('lit'); }
-            lit = next;
-        });
-    }
-
-    /* -----------------------------------------------------------
-       Idea text fields — types the active one in, untypes the rest.
-       Time-based off rAF so it finishes in the same wall-clock span
-       at any frame rate and suspends cleanly in a hidden tab.
-       ----------------------------------------------------------- */
-    const Typer = (() => {
-        const boxes = [];
-        let raf = null;
-        let last = 0;
-        const CPS_IN = 62;
-        const CPS_OUT = 150;
-
-        function register(el) {
-            const field = el.querySelector('.tbox-text');
-            const source = el.querySelector('.sr-only');
-            if (!field || !source) return;
-            boxes.push({ el, field, full: source.textContent.trim(), n: 0, target: 0 });
-        }
-
-        function step(now) {
-            const dt = last ? Math.min((now - last) / 1000, 0.1) : 0;
-            last = now;
-            let busy = false;
-
-            for (const b of boxes) {
-                if (b.n === b.target) continue;
-                busy = true;
-                const rate = b.target > b.n ? CPS_IN : -CPS_OUT;
-                b.n = clamp(b.n + rate * dt, 0, b.full.length);
-                if (Math.abs(b.n - b.target) < 0.6) b.n = b.target;
-                b.field.textContent = b.full.slice(0, Math.round(b.n));
-                b.el.classList.toggle('is-typing', b.n !== b.target);
+            if (entering.length || first) {
+                void root.offsetWidth;
+                slides.forEach(slide => slide.classList.remove('no-anim'));
+                entering.forEach(([slide, off]) => place(slide, off, false));
             }
+            if (later.length) settle = { list: later, timer: setTimeout(flushSettle, 950) };
 
-            raf = busy ? window.requestAnimationFrame(step) : (last = 0, null);
-        }
-
-        function setActive(index) {
-            let changed = false;
-            boxes.forEach((b, i) => {
-                const target = i === index ? b.full.length : 0;
-                if (b.target !== target) { b.target = target; changed = true; }
-                b.el.classList.toggle('is-live', i === index);
+            slides.forEach((slide) => {
+                const on = slide.classList.contains('is-active');
+                // side cards stay clickable (to bring them in) but out of
+                // the tab order and the accessibility tree
+                slide.setAttribute('aria-hidden', on ? 'false' : 'true');
+                slide.querySelectorAll('a, button').forEach(el => { el.tabIndex = on ? 0 : -1; });
             });
-            if (!changed || raf) return;
-            last = 0;
-            raf = window.requestAnimationFrame(step);
+            tabs.forEach((tab, i) => {
+                const on = i === index;
+                tab.classList.toggle('is-active', on);
+                tab.setAttribute('aria-selected', on ? 'true' : 'false');
+                tab.tabIndex = on ? 0 : -1;
+            });
+            const tab = tabs[index];
+            if (tablist && tablist.scrollWidth > tablist.clientWidth + 1) {
+                tablist.scrollTo({ left: tab.offsetLeft - (tablist.clientWidth - tab.offsetWidth) / 2, behavior: first ? 'auto' : 'smooth' });
+            }
         }
 
-        function settle(index) {
-            boxes.forEach((b, i) => {
-                b.target = b.n = i === index ? b.full.length : 0;
-                b.field.textContent = b.full.slice(0, b.n);
-                b.el.classList.toggle('is-live', i === index);
-                b.el.classList.remove('is-typing');
+        function go(next) {
+            const target = ((next % n) + n) % n;
+            const step = wrap(target - index);
+            if (!step) return;
+            index = target;
+            layout(false, step);
+        }
+
+        // slides stay clickable while inert content is skipped: a click on a
+        // peeking card brings it to the centre
+        slides.forEach((slide, i) => {
+            slide.hidden = false;
+            slide.addEventListener('click', () => { if (i !== index) go(i); });
+        });
+        tabs.forEach((tab, i) => tab.addEventListener('click', () => go(i)));
+        if (tablist) {
+            tablist.addEventListener('keydown', (event) => {
+                const keys = { ArrowRight: index + 1, ArrowLeft: index - 1, Home: 0, End: n - 1 };
+                if (!(event.key in keys)) return;
+                event.preventDefault();
+                go(keys[event.key]);
+                tabs[index].focus();
             });
         }
 
-        return { register, setActive, settle, count: () => boxes.length };
-    })();
+        // swipe on touch
+        if (viewport) {
+            let x0 = null;
+            viewport.addEventListener('pointerdown', (e) => { if (e.pointerType !== 'mouse') x0 = e.clientX; }, { passive: true });
+            viewport.addEventListener('pointerup', (e) => {
+                if (x0 === null) return;
+                const dx = e.clientX - x0;
+                x0 = null;
+                if (Math.abs(dx) > 40) go(index + (dx < 0 ? 1 : -1));
+            }, { passive: true });
+            viewport.addEventListener('pointercancel', () => { x0 = null; }, { passive: true });
+        }
+
+        layout(true);
+
+        // autoplay forever; pause only while hovered or out of view
+        const setPaused = () => root.toggleAttribute('data-paused', offscreen || hovering);
+        if (!reduced.matches) {
+            root.classList.add('is-auto');
+            root.addEventListener('animationend', (event) => {
+                if (event.animationName === 'ex-progress') go(index + 1);
+            });
+        }
+        if (viewport) {
+            viewport.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') { hovering = true; setPaused(); } });
+            viewport.addEventListener('pointerleave', () => { hovering = false; setPaused(); });
+        }
+        if (hasIO) {
+            new IntersectionObserver((entries) => {
+                for (const entry of entries) { offscreen = !entry.isIntersecting; setPaused(); }
+            }, { threshold: 0.3 }).observe(viewport || root);
+
+            const warm = new IntersectionObserver((entries) => {
+                if (!entries.some(e => e.isIntersecting)) return;
+                warm.disconnect();
+                root.querySelectorAll('img[loading="lazy"]').forEach(img => { img.loading = 'eager'; });
+            }, { rootMargin: '700px 0px' });
+            warm.observe(root);
+        } else {
+            offscreen = false;
+        }
+        setPaused();
+    }
 
     /* -----------------------------------------------------------
-       "How it works" — sticky stage driven by scroll position
+       Logo marquee: clone each row so the loop is seamless and
+       pace it by width. It loops forever, never pausing.
        ----------------------------------------------------------- */
-    function initStages() {
-        const track = document.querySelector('.how-track');
-        const stage = track && track.querySelector('.how-stage');
-        if (!track || !stage) return;
+    function initMarquee() {
+        const root = document.querySelector('[data-mq]');
+        if (!root || reduced.matches) return;
 
-        stage.querySelectorAll('.tbox').forEach(el => Typer.register(el));
-
-        const wires = [...stage.querySelectorAll('.wire')];
-        const sets = [...stage.querySelectorAll('.phoneset')];
-        const outs = [...stage.querySelectorAll('.outset')];
-        const count = Math.max(1, parseInt(track.dataset.stages || '3', 10));
-
-        let current = -1;
-
-        function apply(next) {
-            if (next === current) return;
-            current = next;
-            stage.dataset.stage = String(next);
-
-            // stage 0 primes the first field; 1 and 2 hand off between brands
-            Typer.setActive(next === 0 ? 0 : next - 1);
-
-            wires.forEach((el, i) => el.classList.toggle('is-drawn', next >= i + 1));
-            sets.forEach((el, i) => el.classList.toggle('is-on', next === i + 1));
-            outs.forEach((el, i) => el.classList.toggle('is-on', next === i + 1));
-        }
-
-        if (reduced.matches) {
-            track.style.height = 'auto';
-            stage.style.position = 'static';
-            stage.style.height = 'auto';
-            stage.dataset.stage = '1';
-            Typer.settle(0);
-            wires.forEach(el => el.classList.add('is-drawn'));
-            sets.forEach((el, i) => el.classList.toggle('is-on', i === 0));
-            outs.forEach((el, i) => el.classList.toggle('is-on', i === 0));
-            return;
-        }
-
-        scrollJobs.push(() => {
-            const rect = track.getBoundingClientRect();
-            const vh = viewportH();
-
-            if (rect.bottom <= 0) { apply(count - 1); return; }
-            if (rect.top >= vh) { apply(0); return; }
-
-            const runway = Math.max(1, rect.height - vh);
-            const p = clamp(-rect.top / runway, 0, 1);
-            const next = p < 0.26 ? 0
-                : Math.min(count - 1, 1 + Math.floor(((p - 0.26) / 0.74) * (count - 1)));
-            apply(next);
+        root.querySelectorAll('.mq-row').forEach(row => {
+            const track = row.querySelector('[data-mq-track]');
+            if (!track) return;
+            const width = track.scrollWidth;
+            if (!width) return;
+            const copies = Math.max(1, Math.ceil((window.innerWidth * 1.2) / width));
+            for (let i = 0; i < copies; i++) {
+                const clone = track.cloneNode(true);
+                clone.removeAttribute('data-mq-track');
+                clone.setAttribute('aria-hidden', 'true');
+                row.appendChild(clone);
+            }
+            // a slow, steady drift that never stops
+            row.style.setProperty('--mq-dur', `${Math.round(width / 18)}s`);
         });
+        root.classList.add('is-ready');
+    }
+
+    /* -----------------------------------------------------------
+       What you get — tabs with a sliding indicator
+       ----------------------------------------------------------- */
+    function initPack() {
+        const root = document.querySelector('[data-pk]');
+        if (!root) return;
+        const tablist = root.querySelector('[role="tablist"]');
+        const tabs = [...root.querySelectorAll('[role="tab"]')];
+        const panels = [...root.querySelectorAll('[data-pk-panel]')];
+        const ind = root.querySelector('.pk-ind');
+        if (!tablist || !ind || tabs.length !== panels.length) return;
+
+        const place = (tab) => {
+            ind.style.setProperty('--x', `${tab.offsetLeft}px`);
+            ind.style.setProperty('--w', `${tab.offsetWidth}px`);
+        };
+
+        const ctl = makeTabs(tablist, tabs, panels, (i) => place(tabs[i]));
+
+        // first placement without the slide
+        ind.style.transition = 'none';
+        place(tabs[ctl.index]);
+        void ind.offsetWidth;
+        ind.style.transition = '';
+        root.classList.add('is-ready');
+
+        let raf = 0;
+        const replace = () => {
+            window.cancelAnimationFrame(raf);
+            raf = window.requestAnimationFrame(() => place(tabs[ctl.index]));
+        };
+        window.addEventListener('resize', replace, { passive: true });
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(replace);
     }
 
     /* -----------------------------------------------------------
        FAQ — <details> that animates open and closed
        ----------------------------------------------------------- */
     function initFaq() {
+        const EASE_OPEN = 'cubic-bezier(0.22, 1, 0.36, 1)';
+        const EASE_CLOSE = 'cubic-bezier(0.4, 0, 0.2, 1)';
+
         document.querySelectorAll('.q').forEach(details => {
             const summary = details.querySelector('summary');
-            const wrap = details.querySelector('.q-wrap');
-            if (!summary || !wrap) return;
+            const body = details.querySelector('.q-body');
+            if (!summary || !body || typeof body.animate !== 'function') return;
 
-            let animating = false;
+            let anim = null;
 
             summary.addEventListener('click', (event) => {
-                if (reduced.matches) return;         // let the browser do it plainly
+                if (reduced.matches) return;          // let the browser do it plainly
                 event.preventDefault();
-                if (animating) return;
-                animating = true;
 
-                const done = () => { animating = false; };
+                // Pick up from wherever an in-flight animation has got to.
+                // A closed <details> still reports its content's layout
+                // height in Chrome, so only measure while it's open.
+                const from = details.open ? body.getBoundingClientRect().height : 0;
+                if (anim) { anim.cancel(); anim = null; }
 
-                if (!details.open) {
-                    wrap.setAttribute('data-collapsed', '');
-                    details.open = true;
-                    window.requestAnimationFrame(() => {
-                        window.requestAnimationFrame(() => wrap.removeAttribute('data-collapsed'));
-                    });
-                    window.setTimeout(done, 460);
-                } else {
-                    wrap.setAttribute('data-collapsed', '');
-                    window.setTimeout(() => {
+                const closing = details.open && !details.classList.contains('is-closing');
+
+                if (closing) {
+                    details.classList.add('is-closing');
+                    anim = body.animate(
+                        [{ height: `${from}px`, opacity: 1 }, { height: '0px', opacity: 0 }],
+                        { duration: 320, easing: EASE_CLOSE }
+                    );
+                    anim.onfinish = () => {
                         details.open = false;
-                        wrap.removeAttribute('data-collapsed');
-                        done();
-                    }, 420);
+                        details.classList.remove('is-closing');
+                        anim = null;
+                    };
+                    return;
                 }
+
+                details.classList.remove('is-closing');
+                details.open = true;
+                const to = body.scrollHeight;
+                anim = body.animate(
+                    [{ height: `${from}px`, opacity: from ? 1 : 0 }, { height: `${to}px`, opacity: 1 }],
+                    { duration: 420, easing: EASE_OPEN }
+                );
+                anim.onfinish = () => { anim = null; };
             });
         });
     }
 
     /* -----------------------------------------------------------
+       Hero overscroll: when Safari rubber-bands past the top, the
+       hero image stretches up from its bottom edge to fill the gap
+       rather than exposing the page background. Browsers that
+       don't report a negative scroll simply never trigger it.
+       ----------------------------------------------------------- */
+    function initHeroStretch() {
+        const hero = document.querySelector('.hero');
+        const frame = hero && hero.querySelector('.hero-frame');
+        if (!frame || reduced.matches) return;
+
+        let raf = 0;
+        let stretched = false;
+
+        const apply = () => {
+            raf = 0;
+            const y = window.scrollY;
+            if (y < 0) {
+                const scale = 1 + (-y) / Math.max(1, hero.offsetHeight);
+                frame.style.transform = `scale(${scale.toFixed(4)})`;
+                stretched = true;
+            } else if (stretched) {
+                frame.style.transform = '';
+                stretched = false;
+            }
+        };
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY >= 0 && !stretched) return;
+            if (!raf) raf = window.requestAnimationFrame(apply);
+        }, { passive: true });
+    }
+
+    /* -----------------------------------------------------------
        Anchors — navbar.js calls this if it exists
        ----------------------------------------------------------- */
+    /* Sections carry their own top padding, which already clears the
+       navbar, so a jump lands the section's edge exactly at the top of
+       the viewport. Once the scroll settles it's re-measured, in case
+       anything above (late images, fonts) shifted the layout mid-flight. */
+    function targetY(target) {
+        const margin = parseFloat(getComputedStyle(target).scrollMarginTop) || 0;
+        return Math.max(0, Math.round(target.getBoundingClientRect().top + window.scrollY - margin));
+    }
+
     window.BrandFounderScrollToTarget = function (target, hash, behavior) {
         if (!target) return;
-        target.scrollIntoView({
-            behavior: reduced.matches ? 'auto' : (behavior || 'smooth'),
-            block: 'start'
-        });
+        const smooth = !reduced.matches && behavior !== 'auto';
+        window.scrollTo({ top: targetY(target), behavior: smooth ? 'smooth' : 'instant' });
+
+        if (smooth) {
+            let done = false;
+            const settle = () => {
+                if (done) return;
+                done = true;
+                window.removeEventListener('scrollend', settle);
+                const y = targetY(target);
+                if (Math.abs(y - window.scrollY) > 2) window.scrollTo({ top: y, behavior: 'smooth' });
+            };
+            window.addEventListener('scrollend', settle, { once: true });
+            window.setTimeout(settle, 1400);   // browsers without scrollend
+        }
+
         if (hash) {
             try { history.replaceState(null, '', hash); } catch (e) { /* ignore */ }
         }
     };
 
     function initAnchors() {
-        document.querySelectorAll('.foot a[href^="#"]').forEach(link => {
+        document.querySelectorAll('main a[href^="#"], .site-foot a[href^="#"], .foot a[href^="#"]').forEach(link => {
             link.addEventListener('click', (event) => {
                 const hash = link.getAttribute('href');
                 const target = hash && hash.length > 1 && document.querySelector(hash);
@@ -358,6 +528,42 @@
     }
 
     /* -----------------------------------------------------------
+       How it works: the glow behind the demo fades in once
+       ----------------------------------------------------------- */
+    function initHowGlow() {
+        const how = document.querySelector('.how');
+        if (!how) return;
+        if (!hasIO) { how.classList.add('is-lit'); return; }
+        const io = new IntersectionObserver((entries) => {
+            if (!entries.some(e => e.isIntersecting)) return;
+            io.disconnect();
+            how.classList.add('is-lit');
+        }, { threshold: 0.2 });
+        io.observe(how);
+    }
+
+    /* -----------------------------------------------------------
+       Legal pages: highlight the section being read in the contents
+       ----------------------------------------------------------- */
+    function initLegalToc() {
+        const links = [...document.querySelectorAll('.legal-toc a[href^="#"]')];
+        if (!links.length) return;
+        const pairs = links.map(a => [a, document.getElementById(a.getAttribute('href').slice(1))]).filter(([, h]) => h);
+        let ticking = false;
+        function mark() {
+            ticking = false;
+            // the last heading above the upper third of the screen wins
+            let current = pairs[0];
+            for (const pair of pairs) if (pair[1].getBoundingClientRect().top < window.innerHeight * 0.33) current = pair;
+            pairs.forEach(([a]) => a.classList.toggle('is-current', a === current[0]));
+        }
+        window.addEventListener('scroll', () => {
+            if (!ticking) { ticking = true; requestAnimationFrame(mark); }
+        }, { passive: true });
+        mark();
+    }
+
+    /* -----------------------------------------------------------
        Boot
        ----------------------------------------------------------- */
     function boot() {
@@ -365,19 +571,15 @@
         if (year) year.textContent = String(new Date().getFullYear());
 
         initReveals();
-        initAmbient();
+        initHeroStretch();
+        initDemo();
+        initHowGlow();
+        initExamples();
         initMarquee();
-        initManifesto();
-        initStages();
+        initPack();
         initFaq();
         initAnchors();
-
-        if (scrollJobs.length) {
-            window.addEventListener('scroll', onScroll, { passive: true });
-            window.addEventListener('resize', onScroll, { passive: true });
-            window.addEventListener('orientationchange', onScroll, { passive: true });
-            runJobs();
-        }
+        initLegalToc();
     }
 
     if (document.readyState === 'loading') {

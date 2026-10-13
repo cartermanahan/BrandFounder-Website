@@ -171,6 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         lastScrollY = currentScrollY;
+        navbar.classList.toggle('has-scrim', currentScrollY > 8);
         updateHeroState();
         syncBrandToggle();
     }
@@ -181,6 +182,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (href && href.startsWith('#')) {
                 event.preventDefault();
+                // unlock the page before scrolling, or the mobile menu's
+                // scroll lock eats the first part of the jump
+                closeMenu();
                 const target = document.querySelector(href);
                 if (target) {
                     if (typeof window.BrandFounderScrollToTarget === 'function') {
