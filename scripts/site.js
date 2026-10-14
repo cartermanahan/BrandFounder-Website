@@ -175,6 +175,8 @@
        the active one, wrapped to -2..2, so the loop never runs out;
        a slide that wraps round the back jumps without animating while
        it's out of view. Autoplay is paced by the pill's progress bar.
+       Below 900px it becomes a native swipe row instead: the cards
+       scroll with the finger, and the chips and dots follow along.
        ----------------------------------------------------------- */
     function initExamples() {
         const root = document.querySelector('[data-ex]');
@@ -186,9 +188,29 @@
         const n = slides.length;
         if (!n || tabs.length !== n) return;
 
+        // swatch labels: white text, black on the near-white tones
+        root.querySelectorAll('.ex-pal i').forEach((sw) => {
+            const hex = (sw.style.getPropertyValue('--c') || '').trim();
+            if (!/^#[0-9a-f]{6}$/i.test(hex)) return;
+            const lum = [1, 3, 5].map(k => {
+                const c = parseInt(hex.slice(k, k + 2), 16) / 255;
+                return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+            });
+            const L = 0.2126 * lum[0] + 0.7152 * lum[1] + 0.0722 * lum[2];
+            sw.classList.toggle('is-light', L > 0.58);
+        });
+
         let index = 0;
         let offscreen = true;
         let hovering = false;
+        const swipe = window.matchMedia('(max-width: 899px)');
+
+        // dots under the swipe row (hidden by CSS on desktop)
+        const dots = document.createElement('div');
+        dots.className = 'ex-dots';
+        dots.setAttribute('aria-hidden', 'true');
+        slides.forEach(() => dots.appendChild(document.createElement('i')));
+        if (viewport) viewport.after(dots);
 
         const wrap = (d) => {
             let o = ((d % n) + n) % n;
@@ -219,6 +241,31 @@
             settle = null;
         }
 
+        function markTabs(first) {
+            tabs.forEach((tab, i) => {
+                const on = i === index;
+                tab.classList.toggle('is-active', on);
+                tab.setAttribute('aria-selected', on ? 'true' : 'false');
+                tab.tabIndex = on ? 0 : -1;
+            });
+            [...dots.children].forEach((dot, i) => dot.classList.toggle('is-on', i === index));
+            const tab = tabs[index];
+            if (tablist && tablist.scrollWidth > tablist.clientWidth + 1) {
+                tablist.scrollTo({ left: tab.offsetLeft - (tablist.clientWidth - tab.offsetWidth) / 2, behavior: first || reduced.matches ? 'auto' : 'smooth' });
+            }
+        }
+
+        function markSlides() {
+            slides.forEach((slide, i) => {
+                // in the swipe row every card is real content; in the
+                // carousel the side cards stay clickable but out of the
+                // tab order and the accessibility tree
+                const on = swipe.matches || i === index;
+                slide.setAttribute('aria-hidden', on ? 'false' : 'true');
+                slide.querySelectorAll('a, button').forEach(el => { el.tabIndex = on ? 0 : -1; });
+            });
+        }
+
         function layout(first, step) {
             flushSettle();
             const later = [];
@@ -246,27 +293,22 @@
             }
             if (later.length) settle = { list: later, timer: setTimeout(flushSettle, 950) };
 
-            slides.forEach((slide) => {
-                const on = slide.classList.contains('is-active');
-                // side cards stay clickable (to bring them in) but out of
-                // the tab order and the accessibility tree
-                slide.setAttribute('aria-hidden', on ? 'false' : 'true');
-                slide.querySelectorAll('a, button').forEach(el => { el.tabIndex = on ? 0 : -1; });
-            });
-            tabs.forEach((tab, i) => {
-                const on = i === index;
-                tab.classList.toggle('is-active', on);
-                tab.setAttribute('aria-selected', on ? 'true' : 'false');
-                tab.tabIndex = on ? 0 : -1;
-            });
-            const tab = tabs[index];
-            if (tablist && tablist.scrollWidth > tablist.clientWidth + 1) {
-                tablist.scrollTo({ left: tab.offsetLeft - (tablist.clientWidth - tab.offsetWidth) / 2, behavior: first ? 'auto' : 'smooth' });
-            }
+            markSlides();
+            markTabs(first);
+        }
+
+        // swipe row: scroll a card to the centre; the scroll handler
+        // below then updates the index
+        function scrollToSlide(i, instant) {
+            if (!viewport) return;
+            const slide = slides[i];
+            const left = slide.offsetLeft - (viewport.clientWidth - slide.offsetWidth) / 2;
+            viewport.scrollTo({ left, behavior: instant || reduced.matches ? 'auto' : 'smooth' });
         }
 
         function go(next) {
             const target = ((next % n) + n) % n;
+            if (swipe.matches) { scrollToSlide(target); return; }
             const step = wrap(target - index);
             if (!step) return;
             index = target;
@@ -277,7 +319,7 @@
         // peeking card brings it to the centre
         slides.forEach((slide, i) => {
             slide.hidden = false;
-            slide.addEventListener('click', () => { if (i !== index) go(i); });
+            slide.addEventListener('click', () => { if (i !== index && !swipe.matches) go(i); });
         });
         tabs.forEach((tab, i) => tab.addEventListener('click', () => go(i)));
         if (tablist) {
@@ -293,7 +335,7 @@
         // swipe on touch
         if (viewport) {
             let x0 = null;
-            viewport.addEventListener('pointerdown', (e) => { if (e.pointerType !== 'mouse') x0 = e.clientX; }, { passive: true });
+            viewport.addEventListener('pointerdown', (e) => { if (e.pointerType !== 'mouse' && !swipe.matches) x0 = e.clientX; }, { passive: true });
             viewport.addEventListener('pointerup', (e) => {
                 if (x0 === null) return;
                 const dx = e.clientX - x0;
@@ -305,14 +347,45 @@
 
         layout(true);
 
-        // autoplay forever; pause only while hovered or out of view
+        // swipe row: the card nearest the centre is the active one
+        if (viewport) {
+            let raf = 0;
+            viewport.addEventListener('scroll', () => {
+                if (!swipe.matches || raf) return;
+                raf = window.requestAnimationFrame(() => {
+                    raf = 0;
+                    const mid = viewport.scrollLeft + viewport.clientWidth / 2;
+                    let best = 0;
+                    let bestD = Infinity;
+                    slides.forEach((slide, i) => {
+                        const d = Math.abs(slide.offsetLeft + slide.offsetWidth / 2 - mid);
+                        if (d < bestD) { bestD = d; best = i; }
+                    });
+                    if (best !== index) { index = best; markTabs(false); }
+                });
+            }, { passive: true });
+        }
+
+        // autoplay forever on desktop; pause only while hovered or out of
+        // view. The swipe row never moves by itself.
         const setPaused = () => root.toggleAttribute('data-paused', offscreen || hovering);
+        const setMode = () => {
+            root.classList.toggle('is-auto', !reduced.matches && !swipe.matches);
+            markSlides();
+            if (swipe.matches) {
+                scrollToSlide(index, true);
+            } else {
+                if (viewport) viewport.scrollLeft = 0;
+                layout(true);
+            }
+        };
         if (!reduced.matches) {
-            root.classList.add('is-auto');
             root.addEventListener('animationend', (event) => {
-                if (event.animationName === 'ex-progress') go(index + 1);
+                if (event.animationName === 'ex-progress' && !swipe.matches) go(index + 1);
             });
         }
+        setMode();
+        if (typeof swipe.addEventListener === 'function') swipe.addEventListener('change', setMode);
         if (viewport) {
             viewport.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') { hovering = true; setPaused(); } });
             viewport.addEventListener('pointerleave', () => { hovering = false; setPaused(); });
@@ -378,6 +451,25 @@
         };
 
         const ctl = makeTabs(tablist, tabs, panels, (i) => place(tabs[i]));
+
+        // phones: each tab ends with a button to the next, which brings
+        // the tabs back into view so the switch is visible
+        panels.forEach((panel, i) => {
+            const copy = panel.querySelector('.pk-copy');
+            const next = tabs[(i + 1) % tabs.length];
+            if (!copy || !next) return;
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'pk-next';
+            btn.innerHTML = `<span><small>${i + 1 < tabs.length ? 'Next' : 'Back to'}</small>${next.textContent.trim()}</span>` +
+                '<svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>';
+            btn.addEventListener('click', () => {
+                ctl.select((i + 1) % tabs.length, { user: true });
+                const top = tablist.getBoundingClientRect().top;
+                if (top < 0) window.scrollBy({ top: top - 90, behavior: reduced.matches ? 'auto' : 'smooth' });
+            });
+            copy.appendChild(btn);
+        });
 
         // first placement without the slide
         ind.style.transition = 'none';

@@ -35,14 +35,15 @@
     })();
   </script>
 
-  <link rel="preload" as="image" href="images/video/hero-cover-frames/frame-193.webp" fetchpriority="high" />
+  <link rel="preload" as="image" href="images/video/hero-cover-frames/frame-193.webp" media="(min-width: 761px)" fetchpriority="high" />
+  <link rel="preload" as="image" href="images/web/hero/hero_portrait_720.jpg" imagesrcset="images/web/hero/hero_portrait_720.jpg 725w, images/web/hero/hero_portrait_1080.jpg 1087w" imagesizes="100vw" media="(max-width: 760px)" fetchpriority="high" />
   <link rel="preload" as="font" type="font/ttf" href="assets/fonts/playfair-display/playfair-display-italic-variable.ttf" crossorigin />
-  <link rel="stylesheet" href="styles/fonts.css?v=15" />
-  <link rel="stylesheet" href="styles/site.css?v=15" />
-  <link rel="stylesheet" href="styles/navbar.css?v=15" />
+  <link rel="stylesheet" href="styles/fonts.css?v=26" />
+  <link rel="stylesheet" href="styles/site.css?v=26" />
+  <link rel="stylesheet" href="styles/navbar.css?v=26" />
 
-  <script src="scripts/navbar.js?v=15" defer></script>
-  <script src="scripts/site.js?v=15" defer></script>
+  <script src="scripts/navbar.js?v=26" defer></script>
+  <script src="scripts/site.js?v=26" defer></script>
 
   <script type="application/ld+json">
   {
@@ -84,6 +85,7 @@
             <li><a href="#faq">FAQ</a></li>
             <li class="nav-legal"><a href="pages/privacy-policy.html">Privacy</a></li>
             <li class="nav-legal"><a href="pages/terms.html">Terms</a></li>
+            <li class="nav-cta-item"><a class="nav-menu-cta" href="https://apps.apple.com/app/id6759218062" target="_blank" rel="noopener noreferrer"><img class="nmc-icon" src="images/icons/brandfounder-icon.png" alt="" width="44" height="44" loading="lazy" decoding="async" /><span class="nmc-text"><b>Launch your brand</b><small>Free preview on iPhone</small></span><svg class="nmc-arrow" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a></li>
           </ul>
         </nav>
         <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to dark mode" title="Switch to dark mode">
@@ -99,8 +101,12 @@
 
     <!-- ============================ HERO ============================ -->
     <section class="hero-section hero" id="top">
-      <img class="hero-frame" src="images/video/hero-cover-frames/frame-193.webp"
-           alt="" width="2880" height="1608" fetchpriority="high" decoding="async" />
+      <picture>
+        <source media="(max-width: 760px)" sizes="100vw"
+                srcset="images/web/hero/hero_portrait_720.jpg 725w, images/web/hero/hero_portrait_1080.jpg 1087w" width="1087" height="1350" />
+        <img class="hero-frame" src="images/video/hero-cover-frames/frame-193.webp"
+             alt="" width="2880" height="1608" fetchpriority="high" decoding="async" />
+      </picture>
 
       <div class="wrap hero-inner">
         <h1 class="h1 hero-title r" data-r>

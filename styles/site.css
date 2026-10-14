@@ -420,7 +420,24 @@ section { position: relative; }
     line-height: 1.02;
     text-shadow: 0 3px 32px rgba(20, 7, 50, 0.44);
 }
-.hero-title .ser { color: #fff; font-size: 1.04em; }
+.hero-title .ser { position: relative; display: inline-block; isolation: isolate; color: #fff; font-size: 1.04em; }
+/* a white paintbrush swoosh under "a brand", painted left to right
+   once the headline has landed */
+.hero-title .ser::after {
+    content: "";
+    position: absolute;
+    left: -0.02em;
+    right: -0.04em;
+    bottom: -0.17em;
+    height: 0.2em;
+    z-index: -1;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 20' preserveAspectRatio='none'%3E%3Cpath fill='%23fff' d='M1 14.5C70 6.5 170 4.5 299 9C220 9.6 130 12.2 46 17.4C26 18.6 10 18.2 1 14.5Z'/%3E%3C/svg%3E") no-repeat center / 100% 100%;
+    filter: drop-shadow(0 2px 8px rgba(20, 7, 50, 0.28));
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path 760ms cubic-bezier(0.65, 0, 0.35, 1) 650ms;
+}
+html:not(.js) .hero-title .ser::after,
+.hero-title.is-in .ser::after { clip-path: inset(0 0 0 0); }
 .hero-cta { color: #111; min-height: 58px; padding-inline: clamp(22px, 4vw, 34px); }
 
 /* "Out now on iPhone · Mac app almost ready" */
@@ -443,6 +460,43 @@ section { position: relative; }
     .hero { padding-bottom: 28px; }
     .hero-title { font-size: clamp(1.85rem, 8vw, 2.6rem); max-width: 14ch; }
     .hero-cta { min-height: 54px; font-size: 0.9rem; padding-inline: 19px; }
+}
+
+/* Phones: the portrait render and the copy travel together as one
+   block, centred on the screen; the headline tucks up under the
+   render's faded bottom edge. The page colour above and below the
+   render continues its top and bottom edges, so neither seam shows. */
+@media (max-width: 760px) {
+    .hero {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 0 0 max(28px, env(safe-area-inset-bottom));
+        background: linear-gradient(90deg, #8168eb, #8461f1 25%, #8d5aee 50%, #9f51f2 75%, #b64ef9);
+    }
+    .hero > picture { position: relative; display: block; margin-bottom: -19vw; }
+    /* above the render, the colours of its top edge, fading softly into
+       the bottom-edge colours of the page (no seam, even before load) */
+    .hero > picture::before {
+        content: "";
+        position: absolute;
+        inset: -100svh 0 55% 0;
+        z-index: -3;
+        background: linear-gradient(90deg, #a383e8, #a07bec 25%, #8c6ef0 50%, #7f5df3 75%, #8357ed);
+        -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 40vw), transparent);
+        mask-image: linear-gradient(180deg, #000 calc(100% - 40vw), transparent);
+        pointer-events: none;
+    }
+    .hero-frame {
+        position: relative;
+        inset: auto;
+        width: 100%;
+        height: auto;
+        aspect-ratio: 1087 / 1350;
+        -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 7%, #000 74%, transparent 99%);
+        mask-image: linear-gradient(180deg, transparent 0%, #000 7%, #000 74%, transparent 99%);
+    }
+    .hero::after { background: linear-gradient(180deg, transparent 55%, rgba(26, 8, 57, 0.14) 72%, rgba(18, 7, 44, 0.6) 100%); }
 }
 
 /* ---------------------------------------------------------------
@@ -687,7 +741,8 @@ html:not(.js) .how-glow { opacity: 0.75; }
    in Space Grotesk. palette[2] is the card accent (--a).
    Panels stack in one grid cell so switching never changes height.
    --------------------------------------------------------------- */
-.ex-shell { display: grid; gap: 18px; }
+/* one shrinkable column, or the tab strip's width blows out the page on phones */
+.ex-shell { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; }
 .ex-nav { display: flex; justify-content: center; }
 
 .ex-tabs,
@@ -956,35 +1011,31 @@ html:not(.js) .how-glow { opacity: 0.75; }
 }
 .ex-tone { font-size: 13px; font-weight: 600; opacity: 0.86; }
 
-/* five square swatches; hover one to read its hex */
-.ex-pal { display: flex; gap: 4px; }
+/* five swatch bars, each labelled with its hex (dark text on the
+   near-white tones, set by JS) */
+.ex-pal { display: flex; gap: 4px; max-width: 380px; }
 .ex-pal i {
     position: relative;
-    flex: 0 0 auto;
-    width: clamp(34px, 3.4vw, 42px);
-    aspect-ratio: 1;
-    border-radius: 6px;
+    flex: 1 1 0;
+    display: grid;
+    place-items: center;
+    min-width: 0;
+    height: 38px;
+    border-radius: 7px;
     background: var(--c);
     box-shadow: inset 0 0 0 1px var(--ex-line);
     transition: transform 300ms var(--ease);
 }
 .ex-pal i span {
-    position: absolute;
-    left: 50%; bottom: calc(100% + 6px);
-    transform: translate3d(-50%, 4px, 0);
-    padding: 3px 7px;
-    border-radius: 6px;
-    background: rgba(0, 0, 0, 0.8);
-    font: 600 0.62rem/1.2 var(--mono);
+    font: 600 9.5px/1 var(--mono);
+    letter-spacing: 0.02em;
     color: #fff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.28);
     white-space: nowrap;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 200ms ease, transform 260ms var(--ease);
 }
+.ex-pal i.is-light span { color: #111; text-shadow: none; }
 @media (hover: hover) {
     .ex-pal i:hover { transform: translate3d(0, -3px, 0); }
-    .ex-pal i:hover span { opacity: 1; transform: translate3d(-50%, 0, 0); }
 }
 .ex-pal--ghost i { background: var(--ex-fill); box-shadow: inset 0 0 0 1px var(--ex-line); }
 
@@ -998,7 +1049,6 @@ html:not(.js) .how-glow { opacity: 0.75; }
     box-shadow: 0 12px 26px rgba(0, 0, 0, 0.3), inset 0 0 0 1px var(--ex-line);
     transition: transform 420ms var(--ease);
 }
-.ex-row--sq img { aspect-ratio: 1; }
 .ex-row img.is-sq { object-position: 12% 50%; }   /* keep a square ad's headline in frame */
 @media (hover: hover) { .ex-row img:hover { transform: translate3d(0, -4px, 0); } }
 
@@ -1092,12 +1142,113 @@ html:not(.js) .how-glow { opacity: 0.75; }
     .ex-hero { --exh: clamp(360px, 50vh, 500px); height: var(--exh); width: calc(var(--exh) * 0.8); max-height: none; }
     .ex-info { gap: 14px; }
     .ex-facts { gap: 12px; }
-    .ex-pal i { width: 34px; }
     .ex-k { margin-bottom: 7px; }
-    .ex-row { max-width: 380px; gap: 8px; }
-    .ex-row img { aspect-ratio: 1; border-radius: 10px; }
+    .ex-row { max-width: 340px; gap: 8px; }
+    .ex-pal { max-width: 340px; }
+    .ex-row img { border-radius: 10px; }
     .ex-quote { padding: 12px 16px 12px 54px; }
     .ex-qmark { font-size: 64px; }
+}
+
+/* Phones and tablets: a native swipe row of cards. Every card is fully
+   visible and tappable, the row scrolls with the finger (snapping card
+   to card sideways only), and the brand chips above jump to a card. */
+@media (max-width: 899px) {
+    .ex-nav { width: 100%; }
+    .ex-tabs {
+        width: 100%;
+        padding: 2px var(--gut);
+        border: 0;
+        border-radius: 0;
+        background: none;
+        box-shadow: none;
+        gap: 8px;
+        scroll-padding-inline: var(--gut);
+    }
+    .ex-tab {
+        height: 38px;
+        padding: 0 14px 0 10px;
+        font-size: 0.84rem;
+        background: var(--surface);
+        box-shadow: inset 0 0 0 1px var(--line);
+    }
+    .ex-tab.is-active { box-shadow: none; }
+    .ex-tab-bar { display: none; }
+
+    .ex-viewport {
+        --ex-card: min(84vw, 400px);
+        overflow-x: auto;
+        overflow-y: hidden;
+        overscroll-behavior-x: contain;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-x pan-y;
+        padding-block: 4px 30px;
+    }
+    .ex-viewport::-webkit-scrollbar { display: none; }
+    .ex-track {
+        display: flex;
+        gap: 12px;
+        width: max-content;
+        padding-inline: calc((100vw - var(--ex-card)) / 2);
+    }
+    .ex-slide,
+    .ex-slide.is-active,
+    .ex-slide.is-far {
+        flex: 0 0 var(--ex-card);
+        width: var(--ex-card);
+        transform: none;
+        opacity: 1;
+        transition: none;
+        cursor: auto;
+        scroll-snap-align: center;
+        scroll-snap-stop: always;
+        box-shadow: var(--shadow-md), inset 0 0 0 1px var(--ex-line);
+    }
+    .ex-slide:not(.is-active) .ex-panel { pointer-events: auto; }
+
+    /* compact card: image, name, line, palette strip, visuals */
+    .ex-panel { gap: 14px; padding: 10px 10px 16px; }
+    .ex-hero { aspect-ratio: 6 / 5; max-height: none; border-radius: 16px; }
+    .ex-hero img { object-position: 50% 42%; }
+    .ex-info { gap: 14px; padding-inline: 6px; }
+    .ex-id { gap: 11px; }
+    .ex-tile { width: 42px; height: 42px; border-radius: 12px; }
+    .ex-tile img { width: 27px; height: 27px; }
+    .ex-wm { font-size: 19px; }
+    .ex-wm--northline { font-size: 16px; letter-spacing: 3.4px; }
+    .ex-wm--henley { font-size: 16px; letter-spacing: 3px; }
+    .ex-wm--endometer { font-size: 20px; }
+    .ex-wm--selfpackage { font-size: 21px; }
+    .ex-cat { font-size: 11.5px; letter-spacing: 0.3px; }
+
+    .ex-facts { gap: 10px; }
+    .ex-fact { gap: 4px; }
+    .ex-tagline { font-size: 17px; }
+    .ex-tone { font-size: 12.5px; }
+
+    /* the palette as one continuous strip */
+    .ex-pal { gap: 0; border-radius: 10px; overflow: hidden; box-shadow: inset 0 0 0 1px var(--ex-line); }
+    .ex-pal { max-width: none; }
+    .ex-pal i { height: 34px; border-radius: 0; box-shadow: none; }
+    .ex-pal--ghost { gap: 5px; overflow: visible; box-shadow: none; border-radius: 0; }
+    .ex-pal--ghost i { border-radius: 8px; }
+
+    .ex-k { margin-bottom: 7px; }
+    .ex-row { gap: 6px; }
+    .ex-row img { border-radius: 10px; box-shadow: inset 0 0 0 1px var(--ex-line); }
+
+    .ex-quote { display: none; }
+    .ex-quote--yours { display: grid; padding: 14px 16px; }
+}
+
+/* swipe hint dots (phones only) */
+.ex-dots { display: none; }
+@media (max-width: 899px) {
+    .ex-dots { display: flex; justify-content: center; gap: 6px; margin-top: -14px; }
+    .ex-dots i { width: 6px; height: 6px; border-radius: 3px; background: var(--line-2); transition: width 300ms var(--ease), background-color 300ms ease; }
+    .ex-dots i.is-on { width: 18px; background: var(--text); }
 }
 
 /* ---------------------------------------------------------------
@@ -1166,7 +1317,7 @@ html:not(.js) .how-glow { opacity: 0.75; }
 /* ---------------------------------------------------------------
    11 · WHAT YOU GET — the pack, one tab at a time
    --------------------------------------------------------------- */
-.pk { display: grid; justify-items: center; gap: clamp(22px, 3vw, 34px); }
+.pk { display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; gap: clamp(22px, 3vw, 34px); }
 
 .pk-tab {
     position: relative;
@@ -1267,6 +1418,64 @@ html:not(.js) .how-glow { opacity: 0.75; }
     .pk-panel { grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr); gap: 20px; align-items: stretch; align-content: stretch; }
     .pk-visual { min-height: 420px; }
     .pk-copy { display: grid; align-content: start; gap: 14px; }
+}
+
+/* Phones: the cards collapse into one grouped list (icon beside the
+   text), and each tab ends with a button to the next one. */
+.pk-next { display: none; }
+@media (max-width: 619px) {
+    .pk-tabs { width: 100%; padding: 4px; gap: 0; }
+    .pk-tab { flex: 1 1 auto; height: 38px; padding: 0 6px; font-size: 0.79rem; letter-spacing: -0.02em; }
+    /* only the open tab takes up room, so short tabs leave no gap */
+    .pk-stage { position: relative; }
+    .pk-panel:not(.is-active) { position: absolute; inset: 0 0 auto; }
+    .pk-ind { top: 4px; height: 38px; }
+    .pk-visual { min-height: 0; }
+    .pk-viz { padding: 20px 18px; }
+    .pk-desc { margin: 4px 2px 2px; font-size: 1.12rem; }
+    .pk-cards {
+        gap: 0;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: var(--card);
+        box-shadow: inset 0 1px 0 var(--edge);
+        overflow: hidden;
+    }
+    .pk-card {
+        display: grid;
+        grid-template-columns: 34px minmax(0, 1fr);
+        column-gap: 14px;
+        padding: 14px 16px;
+        border: 0;
+        border-radius: 0;
+        background: none;
+        box-shadow: none;
+    }
+    .pk-card + .pk-card { border-top: 1px solid var(--line); }
+    .pk-ic { grid-row: span 2; width: 34px; height: 34px; margin: 0; }
+    .pk-card h3 { margin: 1px 0 2px; font-size: 0.95rem; }
+    .pk-card p { font-size: 0.85rem; line-height: 1.45; }
+
+    .pk-next {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        width: 100%;
+        margin-top: 12px;
+        padding: 14px 16px 14px 18px;
+        border: 1px solid var(--accent-line);
+        border-radius: 16px;
+        background: var(--accent-soft);
+        color: var(--text);
+        font-size: 0.92rem;
+        font-weight: 600;
+        letter-spacing: -0.015em;
+        text-align: left;
+    }
+    .pk-next small { display: block; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-ink); }
+    .pk-next svg { flex: 0 0 auto; width: 32px; height: 32px; padding: 8px; border-radius: 50%; background: var(--accent); color: #fff; }
+    .pk-next:active { transform: scale(0.985); }
 }
 
 /* shared viz bits */
@@ -1523,6 +1732,7 @@ html:not(.js) .how-glow { opacity: 0.75; }
 /* ---------------------------------------------------------------
    12 · FREE PREVIEW — steps beside the real onboarding screen
    --------------------------------------------------------------- */
+.preview { overflow-x: clip; }   /* the phone's glow must never widen the page */
 .pv { display: grid; gap: clamp(44px, 6vw, 72px); align-items: center; }
 .pv-copy { display: grid; justify-items: start; }
 .pv-copy .ser { color: var(--accent-ink); }
@@ -1567,6 +1777,34 @@ html:not(.js) .how-glow { opacity: 0.75; }
     :root:not([data-theme="dark"]) .pv-phone img { filter: drop-shadow(0 26px 44px rgba(20, 18, 50, 0.18)); }
 }
 :root[data-theme="light"] .pv-phone img { filter: drop-shadow(0 26px 44px rgba(20, 18, 50, 0.18)); }
+
+/* Phones and tablets: the onboarding screen sits right under the
+   heading (top of the phone only, fading out), then the steps. */
+@media (max-width: 899px) {
+    .pv { gap: 0; }
+    .pv-copy { display: contents; }
+    .pv-copy > .eyebrow { order: 1; }
+    .pv-copy > .h2 { order: 2; }
+    .pv-phone { order: 3; }
+    .pv-steps { order: 4; margin-top: 18px; }
+    .pv-cta { order: 5; justify-items: stretch; }
+    .pv-cta .btn { justify-content: center; }
+    .pv-phone {
+        --pv-w: min(260px, 66vw);
+        width: var(--pv-w);
+        height: calc(var(--pv-w) * 1564 / 760 * 0.58);
+        margin-top: 28px;
+    }
+    .pv-phone img {
+        height: 100%;
+        object-fit: cover;
+        object-position: 50% 0;
+        -webkit-mask-image: linear-gradient(180deg, #000 62%, transparent 96%);
+        mask-image: linear-gradient(180deg, #000 62%, transparent 96%);
+        filter: none;
+    }
+    .pv-phone::before { inset: 4% -14% 10%; }
+}
 
 @media (min-width: 900px) {
     .pv { grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); }

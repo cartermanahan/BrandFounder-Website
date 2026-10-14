@@ -79,8 +79,8 @@
     border: 1px solid var(--nav-border);
     background: var(--nav-surface);
     box-shadow: var(--nav-shadow);
-    backdrop-filter: blur(28px) saturate(1.35);
-    -webkit-backdrop-filter: blur(28px) saturate(1.35);
+    backdrop-filter: blur(14px) saturate(1.15);
+    -webkit-backdrop-filter: blur(14px) saturate(1.15);
     text-decoration: none;
     cursor: pointer;
     transform: translate3d(var(--brand-shift), 0, 0);
@@ -124,8 +124,8 @@
     border: 1px solid var(--nav-border);
     background: var(--nav-surface);
     box-shadow: var(--nav-shadow);
-    backdrop-filter: blur(30px) saturate(1.4);
-    -webkit-backdrop-filter: blur(30px) saturate(1.4);
+    backdrop-filter: blur(14px) saturate(1.15);
+    -webkit-backdrop-filter: blur(14px) saturate(1.15);
     overflow: hidden;
     opacity: 1;
     transform-origin: center;
@@ -373,9 +373,27 @@
         box-shadow: var(--nav-shadow);
         pointer-events: auto;
         overflow: visible;
-        backdrop-filter: blur(28px) saturate(1.5);
-        -webkit-backdrop-filter: blur(28px) saturate(1.5);
+        position: relative;
+        /* the blur lives on a pseudo-element: a backdrop-filter on the
+           pill itself would make it the containing block of the fixed
+           menu, which then lays out inside the pill and spills past the
+           screen edge, widening the whole page on phones */
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
     }
+
+    .navbar-pill::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        border-radius: inherit;
+        backdrop-filter: blur(14px) saturate(1.15);
+        -webkit-backdrop-filter: blur(14px) saturate(1.15);
+        pointer-events: none;
+    }
+
+    .navbar.nav-open .navbar-pill::before { display: none; }
 
     .nav-links {
         position: static;
@@ -414,7 +432,9 @@
         opacity: 0;
         visibility: hidden;
         pointer-events: none;
-        transform: scale(1.045);
+        /* settles from slightly small: never larger than the screen,
+           or mobile browsers widen the page to fit it */
+        transform: scale(0.97);
         transition:
             opacity 340ms cubic-bezier(0.22, 1, 0.36, 1),
             transform 440ms cubic-bezier(0.22, 1, 0.36, 1),
@@ -427,8 +447,8 @@
         content: "";
         position: fixed;
         top: -20%;
-        right: -30%;
-        width: 90vw;
+        right: 0;
+        width: 80vw;
         aspect-ratio: 1;
         border-radius: 50%;
         background: radial-gradient(circle at center, var(--nav-overlay-glow), transparent 65%);
@@ -475,6 +495,7 @@
     .nav-links ul.show > li:nth-child(9) { transition-delay: 490ms; }
 
     .nav-links a {
+        display: flex;
         justify-content: flex-start;
         align-items: baseline;
         gap: 16px;
@@ -494,9 +515,9 @@
 
     .nav-links a::before {
         content: "0" counter(bfnav);
-        font-family: "Instrument Serif", "Times New Roman", Georgia, serif;
+        font-family: "Playfair Display", Georgia, serif;
         font-style: italic;
-        font-weight: 400;
+        font-weight: 600;
         font-size: 0.55em;
         letter-spacing: 0;
         color: var(--nav-overlay-index);
@@ -782,8 +803,8 @@ html.nav-locked body {
    cut-off.
 ================================ */
 .navbar {
-    --nav-scrim-top: rgba(8, 8, 15, 0.34);
-    --nav-scrim-mid: rgba(8, 8, 15, 0.08);
+    --nav-scrim-top: rgba(8, 8, 15, 0.2);
+    --nav-scrim-mid: rgba(8, 8, 15, 0.04);
 }
 
 .navbar::before {
@@ -791,10 +812,10 @@ html.nav-locked body {
     position: absolute;
     inset: 0 0 auto 0;
     z-index: -1;
-    height: calc(100% + 64px);
+    height: calc(100% + 36px);
     background: linear-gradient(180deg, var(--nav-scrim-top) 0%, var(--nav-scrim-mid) 55%, transparent 100%);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
     -webkit-mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.85) 40%, rgba(0, 0, 0, 0.35) 72%, transparent 100%);
     mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.85) 40%, rgba(0, 0, 0, 0.35) 72%, transparent 100%);
     opacity: 0;
@@ -808,19 +829,19 @@ html.nav-locked body {
 
 @media (prefers-color-scheme: light) {
     .navbar {
-        --nav-scrim-top: rgba(251, 251, 252, 0.5);
-        --nav-scrim-mid: rgba(251, 251, 252, 0.12);
+        --nav-scrim-top: rgba(251, 251, 252, 0.3);
+        --nav-scrim-mid: rgba(251, 251, 252, 0.06);
     }
 }
 
 html[data-theme="light"] .navbar {
-    --nav-scrim-top: rgba(251, 251, 252, 0.5);
-    --nav-scrim-mid: rgba(251, 251, 252, 0.12);
+    --nav-scrim-top: rgba(251, 251, 252, 0.3);
+    --nav-scrim-mid: rgba(251, 251, 252, 0.06);
 }
 
 html[data-theme="dark"] .navbar {
-    --nav-scrim-top: rgba(8, 8, 15, 0.34);
-    --nav-scrim-mid: rgba(8, 8, 15, 0.08);
+    --nav-scrim-top: rgba(8, 8, 15, 0.2);
+    --nav-scrim-mid: rgba(8, 8, 15, 0.04);
 }
 
 /* over the purple hero: blur only, with the faintest violet */
@@ -832,4 +853,95 @@ html[data-theme="dark"] .navbar {
 /* the fullscreen mobile menu brings its own background */
 .navbar.nav-open::before {
     opacity: 0;
+}
+
+/* ================================
+   Mobile: the menu carries the CTA.
+   The top bar is just the menu button; "Launch your brand" lives
+   at the foot of the fullscreen menu as an app-style card.
+================================ */
+.nav-cta-item { display: none; }
+
+@media (max-width: 920px) {
+    .navbar-cta,
+    .navbar.is-scrolled .navbar-cta {
+        display: none;
+    }
+
+    /* legal links: quieter than the sections */
+    .nav-links li.nav-legal a {
+        padding: 8px 4px;
+        border-bottom: none;
+        font-size: 0.95rem;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        color: var(--nav-text);
+    }
+    .nav-links li.nav-legal a::before { content: none; }
+    .nav-links li:not(.nav-legal) + li.nav-legal { margin-top: 10px; }
+
+    .nav-cta-item { display: block; margin-top: 22px; }
+    .nav-links a.nav-menu-cta {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 12px 18px 12px 12px;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        border-radius: 22px;
+        background:
+            radial-gradient(120% 140% at 0% 0%, rgba(255, 255, 255, 0.22), transparent 55%),
+            linear-gradient(135deg, #8a74ff 0%, #6d5efc 48%, #4c3ce8 100%);
+        box-shadow:
+            0 22px 46px rgba(76, 60, 232, 0.38),
+            inset 0 1px 0 rgba(255, 255, 255, 0.32);
+        color: #fff;
+        overflow: hidden;
+        isolation: isolate;
+    }
+    .nav-links a.nav-menu-cta::before { content: none; }
+    /* a slow sheen across the card */
+    .nav-links a.nav-menu-cta::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        background: linear-gradient(110deg, transparent 35%, rgba(255, 255, 255, 0.2) 50%, transparent 65%);
+        transform: translate3d(-100%, 0, 0);
+    }
+    .nav-links ul.show a.nav-menu-cta::after { animation: nmc-sheen 3.2s ease-in-out 900ms infinite; }
+    @keyframes nmc-sheen { 0% { transform: translate3d(-100%, 0, 0); } 45%, 100% { transform: translate3d(100%, 0, 0); } }
+
+    .nav-links a.nav-menu-cta:hover,
+    .nav-links a.nav-menu-cta:active {
+        padding-left: 12px;
+        color: #fff;
+        background:
+            radial-gradient(120% 140% at 0% 0%, rgba(255, 255, 255, 0.26), transparent 55%),
+            linear-gradient(135deg, #9583ff 0%, #7465fd 48%, #5242ea 100%);
+    }
+    .nav-links a.nav-menu-cta:active { transform: scale(0.98); }
+
+    .nmc-icon {
+        flex: 0 0 auto;
+        width: 46px;
+        height: 46px;
+        border-radius: 12px;
+        box-shadow: 0 6px 16px rgba(20, 10, 70, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.24);
+    }
+    .nmc-text { display: grid; gap: 2px; min-width: 0; flex: 1 1 auto; }
+    .nmc-text b { font-size: 1.12rem; font-weight: 700; letter-spacing: -0.025em; line-height: 1.15; }
+    .nmc-text small { font-size: 0.8rem; font-weight: 500; letter-spacing: -0.005em; color: rgba(255, 255, 255, 0.78); }
+    .nmc-arrow {
+        flex: 0 0 auto;
+        width: 34px;
+        height: 34px;
+        padding: 9px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.18);
+    }
+}
+
+@media (max-width: 920px) and (prefers-reduced-motion: reduce) {
+    .nav-links ul.show a.nav-menu-cta::after { animation: none; }
 }
