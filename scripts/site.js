@@ -540,6 +540,155 @@
     }
 
     /* -----------------------------------------------------------
+       Hero transition (desktop): the hero is a screen taller than
+       the viewport and its contents stick while that screen scrolls
+       past. Progress through it is mapped straight onto CSS
+       variables (no smoothing, so nothing lags the wheel): the
+       headline lifts away, the pieces fly out, and the scene's clip
+       closes bottom → sides → top into a card around the box.
+       ----------------------------------------------------------- */
+    function initHeroTransition() {
+        const hero = document.querySelector('.hero');
+        const pin = hero && hero.querySelector('.hero-pin');
+        const set = hero && hero.querySelector('.hero-set');
+        const box = hero && hero.querySelector('.hl-box');
+        const navbar = document.querySelector('.navbar');
+        const cta = navbar && navbar.querySelector('.navbar-cta');
+        const how = document.querySelector('.how');
+        if (!pin || !set || !box) return;
+        window.requestAnimationFrame(() => set.classList.add('is-in'));
+        if (reduced.matches) return;
+
+        const desktop = window.matchMedia('(min-width: 761px)');
+        const clamp01 = v => Math.min(1, Math.max(0, v));
+        const span = (p, a, b) => clamp01((p - a) / (b - a));
+        const inOut = t => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+        const out = t => 1 - Math.pow(1 - t, 3);
+
+        let geo = null;
+        let raf = 0;
+        let condensed = false;
+        let ctaOnPage = false;
+
+        // The card's final rectangle: a little above centre, so How it
+        // works has room to arrive beneath it, with the box carried up
+        // into it. Layout sizes only, so the entrance scale and --bs
+        // never skew it.
+        const measure = () => {
+            const vw = pin.clientWidth;
+            const vh = pin.clientHeight;
+            const boxW = box.offsetWidth;
+            const boxCy = (vh - set.offsetHeight) / 2 + box.offsetTop + box.offsetHeight / 2;
+            const h = Math.min(boxW * 1.36, vh * 0.6);
+            const w = h * 0.88;
+            const cy = Math.max(vh * 0.42, h / 2 + 88);
+            geo = {
+                vw,
+                vh,
+                top: cy - h / 2,
+                bottom: vh - cy - h / 2,
+                side: (vw - w) / 2,
+                radius: Math.min(48, w * 0.09),
+                boxScale: Math.min(0.84, (w * 0.72) / boxW),
+                boxShift: cy - boxCy
+            };
+            // pull How it works up so its first line lands just under
+            // the finished card while the hero is still holding
+            if (how) {
+                how.style.marginTop = '';
+                const padTop = parseFloat(getComputedStyle(how).paddingTop) || 0;
+                how.style.marginTop = Math.round(cy + h / 2 + 56 - padTop - vh) + 'px';
+            }
+            // ...and let it rise slower than the page during the hold, so
+            // its first line is already on screen by about halfway, while
+            // the scene is still closing (it lands in the same spot)
+            const range = hero.offsetHeight - vh;
+            geo.howLead = Math.max(0, range - 2 * (vh - 80 - (cy + h / 2 + 56)));
+        };
+
+        const setCondensed = value => {
+            if (value === condensed) return;
+            condensed = value;
+            hero.classList.toggle('is-condensed', value);
+            window.dispatchEvent(new Event('hero:state'));
+        };
+
+        // The navbar's CTA turns purple as soon as its centre is over
+        // the page rather than the purple scene.
+        const setCtaOnPage = value => {
+            if (value === ctaOnPage || !navbar) return;
+            ctaOnPage = value;
+            navbar.classList.toggle('cta-on-page', value);
+        };
+
+        const apply = () => {
+            raf = 0;
+            if (!desktop.matches) {
+                if (geo && how) {
+                    how.style.marginTop = '';
+                    how.style.translate = '';
+                    how.style.opacity = '';
+                }
+                geo = null;
+                setCondensed(false);
+                setCtaOnPage(false);
+                return;
+            }
+            if (!geo) measure();
+            const range = hero.offsetHeight - geo.vh;
+            const p = range > 0 ? clamp01(-hero.getBoundingClientRect().top / range) : 0;
+
+            const tp = out(span(p, 0, 0.3));
+            const sp = inOut(span(p, 0, 0.72));
+            const eb = inOut(span(p, 0.02, 0.6));
+            const es = inOut(span(p, 0.12, 0.74));
+            const et = inOut(span(p, 0.22, 0.82));
+            const bp = inOut(span(p, 0.1, 0.82));
+            const bs = 1 - (1 - geo.boxScale) * bp;
+            const top = geo.top * et;
+            const bottom = geo.bottom * eb;
+            const side = geo.side * es;
+            const r = cta && cta.offsetParent ? cta.getBoundingClientRect() : null;
+
+            const st = hero.style;
+            st.setProperty('--tp', tp.toFixed(4));
+            st.setProperty('--sp', sp.toFixed(4));
+            st.setProperty('--bs', bs.toFixed(4));
+            if (how) {
+                how.style.translate = '0 ' + (-geo.howLead * (1 - p)).toFixed(1) + 'px';
+                // fades in with the transition, fully there once the card is done
+                how.style.opacity = inOut(span(p, 0.25, 0.82)).toFixed(3);
+            }
+            st.setProperty('--by', (geo.boxShift * bp).toFixed(1) + 'px');
+            st.setProperty('--ep', es.toFixed(4));
+            st.setProperty('--ct', top.toFixed(1) + 'px');
+            st.setProperty('--cb', bottom.toFixed(1) + 'px');
+            st.setProperty('--cs', side.toFixed(1) + 'px');
+            st.setProperty('--cr', (geo.radius * es).toFixed(1) + 'px');
+            hero.classList.toggle('is-text-gone', tp > 0.999);
+            // once the page shows behind the navbar, it should style
+            // itself for the page, not the hero
+            const navBottom = r ? r.bottom + 8 : 96;
+            setCondensed(top > navBottom);
+            if (r) {
+                const cx = r.left + r.width / 2;
+                const cy = r.top + r.height / 2;
+                setCtaOnPage(cy < top || cy > geo.vh - bottom || cx > geo.vw - side || cx < side);
+            }
+        };
+
+        const queue = () => {
+            if (!raf) raf = window.requestAnimationFrame(apply);
+        };
+        window.addEventListener('scroll', queue, { passive: true });
+        window.addEventListener('resize', () => {
+            geo = null;
+            queue();
+        });
+        apply();
+    }
+
+    /* -----------------------------------------------------------
        Hero overscroll: when Safari rubber-bands past the top, the
        hero image stretches up from its bottom edge to fill the gap
        rather than exposing the page background. Browsers that
@@ -664,6 +813,7 @@
 
         initReveals();
         initHeroStretch();
+        initHeroTransition();
         initDemo();
         initHowGlow();
         initExamples();

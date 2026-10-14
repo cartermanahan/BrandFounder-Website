@@ -139,7 +139,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const heroBottom = heroSection.getBoundingClientRect().bottom;
         const navbarHeight = navbar.getBoundingClientRect().height || 0;
-        const isOverHero = heroBottom > navbarHeight + 8;
+        // the homepage hero sticks while it closes into a card; it flags
+        // when the page already shows behind the navbar (site.js)
+        const isOverHero = heroBottom > navbarHeight + 8 && !heroSection.classList.contains('is-condensed');
 
         navbar.classList.toggle('is-over-hero', isOverHero);
         navbar.classList.toggle('is-below-hero', !isOverHero);
@@ -278,6 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.addEventListener('scroll', updateNavbarState, { passive: true });
     window.addEventListener('resize', updateNavbarState, { passive: true });
+    window.addEventListener('hero:state', updateHeroState);
     updateNavbarState();
     applyTheme();
 });

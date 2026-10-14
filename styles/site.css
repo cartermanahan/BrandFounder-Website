@@ -474,10 +474,10 @@ html:not(.js) .hero-title .ser::after,
         padding: 0 0 max(28px, env(safe-area-inset-bottom));
         background: linear-gradient(90deg, #8168eb, #8461f1 25%, #8d5aee 50%, #9f51f2 75%, #b64ef9);
     }
-    .hero > picture { position: relative; display: block; margin-bottom: -19vw; }
+    .hero picture { position: relative; display: block; margin-bottom: -19vw; }
     /* above the render, the colours of its top edge, fading softly into
        the bottom-edge colours of the page (no seam, even before load) */
-    .hero > picture::before {
+    .hero picture::before {
         content: "";
         position: absolute;
         inset: -100svh 0 55% 0;
@@ -2211,4 +2211,159 @@ html:not(.js) .how-glow { opacity: 0.75; }
 
 .legal-links { font-size: 0.92rem; color: var(--text-3); }
 
+/* ---------------------------------------------------------------
+   7b · HERO SCENE + SCROLL TRANSITION (desktop)
+   The original render rebuilt from its pieces, laid out on a box
+   that covers the viewport exactly like the render did. The hero is
+   one screen taller than the viewport and its contents stick while
+   that extra screen scrolls past, Revolut-style: the headline lifts
+   away, the four pieces drift out past the camera, and the scene
+   closes in from the bottom, then the sides, then the top, into a
+   card around the box, and How it works rises in beneath it before
+   the hero lets go. Scroll speed is never touched. site.js writes
+   the progress values (--tp, --sp, --bs, --by, --ct/--cs/--cb/--cr,
+   --ep); with no JS or reduced motion the hero is a still screen.
+   Phones keep the portrait render (section 7).
+   --------------------------------------------------------------- */
+.hero-pin { display: contents; }
+.hero-scene,
+.hero-card-edge { display: none; }
 
+@media (min-width: 761px) {
+    .hero {
+        --hold: 120vh;
+        display: block;
+        min-height: 0;
+        height: 100vh;
+        height: 100svh;
+        padding: 0;
+        overflow: visible;
+        background: none;
+    }
+    .js .hero { height: calc(100svh + var(--hold)); }
+    .hero::before,
+    .hero::after,
+    .hero picture { display: none; }
+
+    .hero-pin {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        height: 100svh;
+        display: grid;
+        align-items: end;
+        padding: clamp(112px, 16vh, 160px) 0 clamp(34px, 6vh, 72px);
+        overflow: hidden;
+        overflow: clip;
+        isolation: isolate;
+    }
+
+    .hero-scene {
+        display: block;
+        position: absolute;
+        inset: 0;
+        z-index: -2;
+        clip-path: inset(var(--ct, 0px) var(--cs, 0px) var(--cb, 0px) round var(--cr, 0px));
+    }
+    /* the backdrop: the render's own gradient, sampled from its corners.
+       It shrinks with the clip rather than being cropped by it, so the
+       finished card still runs lavender → violet → magenta */
+    .hero-backdrop {
+        position: absolute;
+        top: var(--ct, 0px);
+        bottom: var(--cb, 0px);
+        left: var(--cs, 0px);
+        right: var(--cs, 0px);
+        background:
+            radial-gradient(70% 90% at 0% 0%, #b58ee0, rgba(181, 142, 224, 0) 65%),
+            radial-gradient(50% 60% at 0% 100%, #7d69f3, rgba(125, 105, 243, 0) 70%),
+            radial-gradient(60% 80% at 100% 100%, #ad40f2, rgba(173, 64, 242, 0) 65%),
+            linear-gradient(90deg, #8f72ef, #8469f1 45%, #9152f1);
+    }
+    /* dark mode only: the same subtle rectangular vignette as before,
+       gone by the time the card has formed. No fade into the page. */
+    .hero-scene::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 5;
+        box-shadow: inset 0 0 clamp(90px, 12vw, 180px) clamp(10px, 2vw, 30px) color-mix(in srgb, var(--bg) 55%, transparent);
+        opacity: calc(1 - var(--ep, 0));
+        pointer-events: none;
+    }
+    :root[data-theme="light"] .hero-scene::before { display: none; }
+    @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) .hero-scene::before { display: none; } }
+
+    /* object-fit: cover, for a stack of layers */
+    .hero-set {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: max(100%, 179.1svh);
+        aspect-ratio: 2880 / 1608;
+        translate: -50% -50%;
+        opacity: 0;
+        scale: 1.04;
+        transition: opacity 900ms ease, scale 1600ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    html:not(.js) .hero-set,
+    .hero-set.is-in { opacity: 1; scale: 1; }
+
+    .hl { position: absolute; height: auto; }
+    /* each piece flies out along its own line; the near ones (phone,
+       arrow) travel further and grow more, as if passing the camera */
+    .hl-gift,
+    .hl-palette,
+    .hl-phone,
+    .hl-arrow {
+        translate: calc(var(--sp, 0) * var(--dx)) calc(var(--sp, 0) * var(--dy));
+        rotate: calc(var(--sp, 0) * var(--dr));
+        scale: calc(1 + var(--sp, 0) * var(--dz));
+        opacity: calc(1 - var(--sp, 0) * 0.85);
+        will-change: translate, scale, opacity;
+    }
+    /* positions measured off the original render (frame 193) */
+    .hl-gift    { left: 29.6%; top: 14.9%; width: 11.9%; z-index: 1; --dx: -20vw; --dy: -30vh; --dr: -14deg; --dz: 0.18; }
+    .hl-palette { left: 59.4%; top: 14.9%; width: 12.4%; z-index: 1; --dx: 20vw;  --dy: -30vh; --dr: 14deg;  --dz: 0.18; }
+    .hl-box     { left: 36.9%; top: 25.4%; width: 26.3%; z-index: 2; translate: 0 var(--by, 0px); scale: var(--bs, 1); will-change: translate, scale; }
+    .hl-phone   { left: 26.4%; top: 51.6%; width: 14.5%; z-index: 3; --dx: -26vw; --dy: 26vh;  --dr: -12deg; --dz: 0.32; }
+    .hl-arrow   { left: 57%;   top: 54.6%; width: 12.8%; z-index: 3; --dx: 26vw;  --dy: 28vh;  --dr: 12deg;  --dz: 0.32; }
+
+    /* the card's rim and the shadow it casts on the page once it
+       stands on its own, tracking the clip exactly */
+    .hero-card-edge {
+        display: block;
+        position: absolute;
+        z-index: -1;
+        top: var(--ct, 0px);
+        bottom: var(--cb, 0px);
+        left: var(--cs, 0px);
+        right: var(--cs, 0px);
+        border-radius: var(--cr, 0px);
+        box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.38), 0 40px 90px -24px rgba(52, 18, 140, 0.5);
+        opacity: var(--ep, 0);
+        pointer-events: none;
+    }
+
+    .hero-inner {
+        opacity: calc(1 - var(--tp, 0));
+        translate: 0 calc(var(--tp, 0) * -7vh);
+    }
+    .hero.is-text-gone .hero-inner { visibility: hidden; }
+}
+@media (min-width: 761px) and (prefers-reduced-motion: reduce) {
+    .js .hero { height: 100svh; }
+    .hero-set { transition: none; }
+}
+/* How it works slides up under the hero's last screen, so its
+   heading arrives just below the finished card. site.js sets the
+   exact pull from the card; this is the starting estimate. */
+@media (min-width: 761px) and (prefers-reduced-motion: no-preference) {
+    .js .how { margin-top: calc(50px - 28svh - var(--sec-y)); }
+}
+
+/* Examples: room inside the carousel's clip for the full card
+   shadow (0 40px 90px), with matching negative margins so the
+   layout doesn't move. The tabs stay on top of the extra room. */
+.ex-nav { position: relative; z-index: 2; }
+.ex-viewport { padding-block: 60px 140px; margin-block: -54px -114px; }
