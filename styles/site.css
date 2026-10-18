@@ -1385,33 +1385,31 @@ html:not(.js) .how-glow { opacity: 0.75; }
 .pk-viz { display: grid; align-content: center; height: 100%; padding: clamp(22px, 3vw, 30px); }
 
 .pk-desc { font-size: clamp(1.08rem, 2.4vw, 1.28rem); font-weight: 600; letter-spacing: -0.026em; line-height: 1.3; margin-bottom: 4px; text-wrap: balance; }
-.pk-cards { display: grid; gap: 10px; }
+/* what's inside: a quiet list, hairline above each item, no boxes */
+.pk-cards { display: grid; column-gap: 28px; counter-reset: pk; }
 .pk-card {
-    padding: 16px 18px;
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    background: var(--card);
-    box-shadow: inset 0 1px 0 var(--edge);
+    position: relative;
+    padding: 16px 0 16px 34px;
+    border-top: 1px solid var(--line);
+    counter-increment: pk;
 }
-.pk-card h3 { font-size: 0.96rem; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 4px; }
-.pk-ic {
-    display: grid; place-items: center;
-    width: 32px; height: 32px;
-    margin-bottom: 12px;
-    border-radius: 9px;
-    background: var(--accent-soft);
-    color: var(--accent);
+.pk-card::before {
+    content: counter(pk, decimal-leading-zero);
+    position: absolute;
+    left: 0;
+    top: 18px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
+    color: var(--accent-ink);
 }
-.pk-ic svg { width: 18px; height: 18px; }
+.pk-card h3 { font-size: 0.98rem; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 4px; }
+.pk-ic { display: none; }
 .pk-card p { font-size: 0.87rem; line-height: 1.5; color: var(--text-2); text-wrap: pretty; }
-@media (hover: hover) {
-    .pk-panel.is-active .pk-card { transition-property: opacity, transform, filter, border-color; }
-    .pk-panel.is-active .pk-card:hover { border-color: var(--accent-line); }
-}
 
 @media (min-width: 620px) {
     .pk-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .pk-card:last-child:nth-child(odd) { grid-column: 1 / -1; }
 }
 @media (min-width: 960px) {
     /* every tab fills the tallest one, so the visual never leaves a gap */
@@ -1433,26 +1431,8 @@ html:not(.js) .how-glow { opacity: 0.75; }
     .pk-visual { min-height: 0; }
     .pk-viz { padding: 20px 18px; }
     .pk-desc { margin: 4px 2px 2px; font-size: 1.12rem; }
-    .pk-cards {
-        gap: 0;
-        border: 1px solid var(--line);
-        border-radius: 18px;
-        background: var(--card);
-        box-shadow: inset 0 1px 0 var(--edge);
-        overflow: hidden;
-    }
-    .pk-card {
-        display: grid;
-        grid-template-columns: 34px minmax(0, 1fr);
-        column-gap: 14px;
-        padding: 14px 16px;
-        border: 0;
-        border-radius: 0;
-        background: none;
-        box-shadow: none;
-    }
-    .pk-card + .pk-card { border-top: 1px solid var(--line); }
-    .pk-ic { grid-row: span 2; width: 34px; height: 34px; margin: 0; }
+    .pk-card { padding: 14px 0 14px 32px; }
+    .pk-card::before { top: 16px; }
     .pk-card h3 { margin: 1px 0 2px; font-size: 0.95rem; }
     .pk-card p { font-size: 0.85rem; line-height: 1.45; }
 
@@ -1490,71 +1470,85 @@ html:not(.js) .how-glow { opacity: 0.75; }
 
 /* the viz animations below replay every time their tab opens */
 
-/* identity: a neutral system sheet (mark, wordmark, a small dashboard, type) */
-.pk-viz--identity { align-content: center; gap: 16px; }
-.idv-top { display: flex; align-items: center; gap: 14px; }
-.idv-mark {
-    flex: 0 0 auto;
-    display: grid; place-items: center;
-    width: 56px; height: 56px;
-    border-radius: 16px;
-    background: linear-gradient(150deg, color-mix(in srgb, var(--text) 92%, transparent), color-mix(in srgb, var(--text) 70%, transparent));
-    color: var(--card);
-    box-shadow: var(--shadow-sm);
-}
-.idv-mark svg { width: 30px; height: 30px; }
-.idv-word { display: grid; gap: 3px; min-width: 0; }
-.idv-word strong { font-size: clamp(1.25rem, 2.4vw, 1.6rem); font-weight: 600; letter-spacing: 0.22em; line-height: 1.1; }
-.idv-word small { font-family: var(--serif); font-style: italic; font-weight: 600; font-size: 0.94rem; letter-spacing: -0.01em; color: var(--text-2); }
-
-.idv-dash { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; }
-.idv-tile {
-    display: grid; align-content: start; gap: 10px;
-    padding: 12px 14px;
-    border-radius: 14px;
-    border: 1px solid var(--line);
-    background: var(--bg);
-}
-.idv-wheel {
-    position: relative;
-    justify-self: center;
-    width: 66px; height: 66px;
-    border-radius: 50%;
-    background: conic-gradient(from 210deg, #c99a9a, #d6b98a, #c9c58f, #a9c29a, #8fbfb4, #8fb1c9, #9a9fd0, #ab9bc9, #c39ab8, #c99a9a);
-    box-shadow: inset 0 0 0 1px var(--line);
-    transition: transform 1100ms var(--ease) 200ms;
-}
-.idv-wheel i { position: absolute; inset: 24%; border-radius: 50%; background: var(--bg); box-shadow: 0 0 0 1px var(--line); }
-:is(.js .pk:not(.is-in), .pk-panel:not(.is-active)) .idv-wheel { transform: rotate(-90deg) scale(0.9); transition-delay: 0s; }
-
-.idv-bars { display: grid; gap: 7px; }
-.idv-bars li { display: grid; grid-template-columns: 58px 1fr; align-items: center; gap: 10px; font-size: 0.74rem; color: var(--text-2); }
-.idv-bars i { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; position: relative; }
-.idv-bars i::after {
-    content: ""; position: absolute; inset: 0;
-    border-radius: inherit;
-    background: linear-gradient(90deg, #8fb1c9, #ab9bc9);
-    transform-origin: 0 50%;
-    transform: scaleX(var(--v));
-    transition: transform 900ms var(--ease) 380ms;
-}
-:is(.js .pk:not(.is-in), .pk-panel:not(.is-active)) .idv-bars i::after { transform: scaleX(0); transition-delay: 0s; }
-
-.idv-type { display: grid; grid-template-columns: auto auto minmax(0, 1fr); gap: 10px; }
-.idv-face, .idv-set {
+/* identity: BrandFounder's own brand sheet. The glass mark floats in
+   a purple stage; beneath it the wordmark, one smooth palette ramp,
+   the type pairing and the tone. */
+.pk-viz--identity {
     display: grid;
-    align-content: center;
-    gap: 4px;
-    padding: 12px 14px;
-    border-radius: 12px;
-    background: var(--bg);
-    box-shadow: inset 0 0 0 1px var(--line);
+    grid-template-rows: minmax(0, 1fr) auto;
+    align-content: stretch;
+    padding: 0;
 }
-.idv-aa { font-size: 1.9rem; font-weight: 600; letter-spacing: -0.03em; line-height: 1; }
-.idv-aa--serif { font-family: var(--serif); font-style: italic; letter-spacing: -0.04em; }
-.idv-face small { font-size: 0.6rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; line-height: 1.3; color: var(--text-3); }
-.idv-set span { font-size: 0.8rem; letter-spacing: 0.06em; color: var(--text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.idv-set span:first-child { font-family: var(--serif); font-style: italic; font-weight: 600; letter-spacing: 0.01em; color: var(--text); }
+.idb-stage {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: 200px;
+    overflow: hidden;
+    background:
+        radial-gradient(70% 90% at 0% 0%, #b58ee0, rgba(181, 142, 224, 0) 65%),
+        radial-gradient(60% 80% at 100% 100%, #ad40f2, rgba(173, 64, 242, 0) 65%),
+        linear-gradient(90deg, #8f72ef, #8469f1 45%, #9152f1);
+}
+/* a soft floor of light under the mark */
+.idb-stage::after {
+    content: "";
+    position: absolute;
+    left: 50%; bottom: 10%;
+    width: 46%; height: 14%;
+    translate: -50% 0;
+    border-radius: 50%;
+    background: rgba(40, 12, 110, 0.45);
+    filter: blur(18px);
+}
+.idb-logo {
+    position: relative;
+    z-index: 1;
+    width: auto;
+    height: 74%;
+    max-height: 230px;
+    max-width: 60%;
+    object-fit: contain;
+    filter: drop-shadow(0 18px 30px rgba(40, 12, 110, 0.4));
+    transition: transform 1000ms var(--ease) 120ms, opacity 600ms ease 120ms;
+}
+:is(.js .pk:not(.is-in), .pk-panel:not(.is-active)) .idb-logo { opacity: 0; transform: translateY(14px) scale(0.92); transition-delay: 0s; }
+
+.idb-sheet { display: grid; gap: 18px; padding: clamp(20px, 2.6vw, 26px); }
+.idb-name { display: grid; gap: 4px; }
+.idb-name strong { font-size: clamp(1.4rem, 2.6vw, 1.75rem); font-weight: 400; letter-spacing: -0.035em; line-height: 1.1; }
+.idb-name strong b { font-weight: 700; }
+.idb-name em { font-family: var(--serif); font-style: italic; font-weight: 600; font-size: 0.95rem; letter-spacing: -0.01em; color: var(--accent-ink); }
+
+/* one continuous ramp, each tone rising into place */
+.idb-pal { display: grid; grid-template-columns: repeat(5, 1fr); height: 64px; border-radius: 14px; overflow: hidden; }
+.idb-pal i {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    padding: 8px;
+    background: var(--c);
+    transform-origin: bottom;
+    transition: transform 700ms var(--ease) calc(240ms + var(--i) * 60ms);
+}
+.idb-pal span {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 0.58rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: rgba(255, 255, 255, 0.72);
+}
+.idb-pal i:nth-child(n+4) span { color: rgba(28, 20, 66, 0.72); }
+:is(.js .pk:not(.is-in), .pk-panel:not(.is-active)) .idb-pal i { transform: scaleY(0); transition-delay: 0s; }
+
+.idb-type { display: grid; grid-template-columns: auto auto minmax(0, 1fr); align-items: end; gap: 22px; }
+.idb-face { display: grid; gap: 6px; }
+.idb-aa { font-size: 2.3rem; font-weight: 600; letter-spacing: -0.04em; line-height: 0.9; }
+.idb-aa--serif { font-family: var(--serif); font-style: italic; }
+.idb-face small,
+.idb-tone small { font-size: 0.68rem; font-weight: 500; letter-spacing: 0.01em; color: var(--text-3); }
+.idb-tone { display: grid; gap: 6px; justify-items: end; text-align: right; }
+.idb-tone span { font-size: 0.86rem; font-weight: 500; letter-spacing: -0.015em; color: var(--text-2); }
 
 /* strategy — demand curve + two headline numbers */
 .chart { width: 100%; height: 130px; color: var(--line-2); overflow: visible; }
@@ -1763,7 +1757,12 @@ html:not(.js) .how-glow { opacity: 0.75; }
 .pv-cta { display: grid; justify-items: start; gap: 12px; margin-top: 28px; }
 .preview-note { font-size: 0.88rem; color: var(--text-3); max-width: 44ch; }
 
-.pv-phone { position: relative; justify-self: center; width: min(290px, 70vw); isolation: isolate; }
+/* The phone morphs from the typed idea into the preview it becomes.
+   Both renders share one frame, so only the screen seems to change:
+   a soft edge (--pv-w, 0 → 1) sweeps down, with a lit band riding it. */
+@property --pv-w { syntax: "<number>"; inherits: true; initial-value: 0; }
+
+.pv-phone { position: relative; display: grid; justify-self: center; width: min(290px, 70vw); margin: 0; isolation: isolate; }
 .pv-phone::before {
     content: "";
     position: absolute;
@@ -1772,14 +1771,84 @@ html:not(.js) .how-glow { opacity: 0.75; }
     background: radial-gradient(closest-side, var(--glow-1), transparent 72%);
     pointer-events: none;
 }
-.pv-phone img { width: 100%; filter: drop-shadow(0 30px 50px rgba(0, 0, 0, 0.45)); }
-@media (prefers-color-scheme: light) {
-    :root:not([data-theme="dark"]) .pv-phone img { filter: drop-shadow(0 26px 44px rgba(20, 18, 50, 0.18)); }
+.pv-screen {
+    position: relative;
+    aspect-ratio: 760 / 1564;
+    filter: drop-shadow(0 30px 50px rgba(0, 0, 0, 0.45));
 }
-:root[data-theme="light"] .pv-phone img { filter: drop-shadow(0 26px 44px rgba(20, 18, 50, 0.18)); }
+@media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) .pv-screen { filter: drop-shadow(0 26px 44px rgba(20, 18, 50, 0.18)); }
+}
+:root[data-theme="light"] .pv-screen { filter: drop-shadow(0 26px 44px rgba(20, 18, 50, 0.18)); }
 
-/* Phones and tablets: the onboarding screen sits right under the
-   heading (top of the phone only, fading out), then the steps. */
+.pv-screen > img,
+.pv-screen > picture { position: absolute; inset: 0 auto auto 0; display: block; width: 100%; aspect-ratio: 760 / 1564; }
+.pv-screen picture img { display: block; width: 100%; height: auto; }
+
+/* the sweep runs straight down the screen */
+.pv-screen { --run: 110%; }
+.pv-brand {
+    --edge: calc(var(--pv-w) * var(--run) - 10%);
+    -webkit-mask-image: linear-gradient(180deg, #000 var(--edge), transparent calc(var(--edge) + 10%));
+    mask-image: linear-gradient(180deg, #000 var(--edge), transparent calc(var(--edge) + 10%));
+}
+/* a band of light on the edge, cut to the phone's silhouette */
+.pv-glint {
+    --mid: calc(var(--pv-w) * var(--run) - 5%);
+    position: absolute; inset: 0;
+    opacity: calc(min(var(--pv-w), 1 - var(--pv-w)) * 6);
+    background: linear-gradient(180deg,
+        transparent calc(var(--mid) - 9%),
+        rgba(150, 130, 255, 0.35) calc(var(--mid) - 3%),
+        rgba(236, 232, 255, 0.95) var(--mid),
+        rgba(150, 130, 255, 0.35) calc(var(--mid) + 3%),
+        transparent calc(var(--mid) + 9%));
+    mix-blend-mode: screen;
+    -webkit-mask: url("../images/web/preview/idea.webp") 0 0 / 100% 100% no-repeat;
+    mask: url("../images/web/preview/idea.webp") 0 0 / 100% 100% no-repeat;
+    pointer-events: none;
+}
+
+.pv-phone[data-pv="brand"] .pv-screen { --pv-w: 1; }
+.pv-phone.is-sweeping .pv-screen { transition: --pv-w 1700ms cubic-bezier(0.65, 0, 0.35, 1); }
+.pv-phone.is-resetting .pv-brand { opacity: 0; transition: opacity 700ms ease; }
+
+/* "Your idea" → "Your brand", swapped in step with the screen */
+.pv-tag {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    justify-self: center;
+    margin-top: 22px;
+    padding: 9px 15px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--bg, #0b0a14) 72%, transparent);
+    -webkit-backdrop-filter: blur(14px) saturate(1.4);
+    backdrop-filter: blur(14px) saturate(1.4);
+    border: 1px solid var(--accent-line);
+    box-shadow: 0 10px 30px rgba(20, 10, 60, 0.22);
+    font-size: 0.84rem; font-weight: 600; letter-spacing: -0.01em;
+    color: var(--text);
+    white-space: nowrap;
+}
+.pv-tag > span { grid-area: 1 / 1; transition: opacity 500ms ease, transform 600ms var(--ease), filter 500ms ease; }
+.pv-tag-brand { color: var(--accent-ink); }
+.pv-phone[data-pv="idea"] .pv-tag-brand,
+.pv-phone[data-pv="brand"] .pv-tag-idea { opacity: 0; transform: translateY(6px); filter: blur(4px); }
+.pv-phone[data-pv="brand"] .pv-tag-brand { transition-delay: 900ms; }
+
+/* the step that matches the screen lights up */
+.pv-n { transition: background 500ms ease, color 500ms ease, border-color 500ms ease, box-shadow 500ms ease; }
+.js .pv-step:nth-child(-n+2) { cursor: pointer; }
+.pv-step.is-on .pv-n {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    box-shadow: 0 0 0 6px var(--accent-soft);
+}
+
+/* Phones and tablets: the phone sits right under the heading (top of
+   the phone only, fading out), then the steps. */
 @media (max-width: 899px) {
     .pv { gap: 0; }
     .pv-copy { display: contents; }
@@ -1790,25 +1859,25 @@ html:not(.js) .how-glow { opacity: 0.75; }
     .pv-cta { order: 5; justify-items: stretch; }
     .pv-cta .btn { justify-content: center; }
     .pv-phone {
-        --pv-w: min(260px, 66vw);
-        width: var(--pv-w);
-        height: calc(var(--pv-w) * 1564 / 760 * 0.58);
+        --pv-size: min(280px, 70vw);
+        width: var(--pv-size);
         margin-top: 28px;
     }
-    .pv-phone img {
-        height: 100%;
-        object-fit: cover;
-        object-position: 50% 0;
-        -webkit-mask-image: linear-gradient(180deg, #000 62%, transparent 96%);
-        mask-image: linear-gradient(180deg, #000 62%, transparent 96%);
+    .pv-screen {
+        aspect-ratio: 760 / 1000;
+        overflow: hidden;
         filter: none;
+        -webkit-mask-image: linear-gradient(180deg, #000 66%, transparent 98%);
+        mask-image: linear-gradient(180deg, #000 66%, transparent 98%);
     }
+    .pv-screen { --run: 72%; }   /* only the top of the phone shows, so the sweep ends there */
     .pv-phone::before { inset: 4% -14% 10%; }
+    .pv-tag { margin-top: -30px; font-size: 0.8rem; padding: 8px 13px; }
 }
 
 @media (min-width: 900px) {
     .pv { grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); }
-    .pv-phone { width: min(320px, 100%); }
+    .pv-phone { width: min(360px, 100%); }
 }
 
 .out-label img { filter: invert(var(--mark-invert)); }
@@ -1867,27 +1936,38 @@ html:not(.js) .how-glow { opacity: 0.75; }
    --------------------------------------------------------------- */
 .close { padding-top: 0; padding-bottom: clamp(72px, 9vw, 112px); }
 
-/* Phone: the render sits on top and dissolves into the card, copy below.
-   Desktop: copy on the left, render on the right fading in from the card. */
+/* An empty lit stage fills the card; the app, on a 3D phone, floats on it.
+   Phone: the phone on top, copy below. Desktop: copy left, phone right. */
 .close-card {
     position: relative;
     overflow: hidden;
     isolation: isolate;
     border-radius: clamp(24px, 3vw, 34px);
-    background:
-        radial-gradient(90% 70% at 85% 50%, rgba(124, 92, 255, 0.28), transparent 70%),
-        linear-gradient(125deg, #0f0a28 0%, #1a1142 52%, #271a5c 100%);
+    background: #160a3a;
     box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 .close-bg {
-    position: relative;
+    position: absolute;
+    inset: 0;
     z-index: 0;
     width: 100%;
-    aspect-ratio: 1 / 0.8;
+    height: 100%;
     object-fit: cover;
-    object-position: 50% 48%;
-    -webkit-mask-image: linear-gradient(180deg, #000 58%, transparent 100%);
-    mask-image: linear-gradient(180deg, #000 58%, transparent 100%);
+    object-position: 50% 60%;
+}
+.close-mark {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: min(72%, 280px);
+    height: auto;
+    aspect-ratio: 875 / 1180;
+    margin: 36px auto 0;
+    object-fit: cover;
+    object-position: 50% 0;
+    filter: drop-shadow(0 26px 34px rgba(20, 6, 60, 0.55));
+    -webkit-mask-image: linear-gradient(180deg, #000 78%, transparent);
+    mask-image: linear-gradient(180deg, #000 78%, transparent);
 }
 .close-inner {
     position: relative;
@@ -1895,8 +1975,7 @@ html:not(.js) .how-glow { opacity: 0.75; }
     display: grid;
     justify-items: center;
     text-align: center;
-    margin-top: -56px;
-    padding: 0 24px 34px;
+    padding: 26px 24px 34px;
     color: #fff;
 }
 .close-title { color: #fff; margin-bottom: 12px; max-width: 12em; }
@@ -1912,18 +1991,20 @@ html:not(.js) .how-glow { opacity: 0.75; }
         align-items: center;
         min-height: clamp(460px, 42vw, 540px);
     }
-    .close-bg {
+    /* large enough to read, rising out of the card's bottom edge */
+    .close-mark {
         position: absolute;
-        inset: 0 0 0 auto;
-        width: 62%;
-        height: 100%;
+        top: 48px;
+        right: 7%;
+        width: min(40%, 380px);
         aspect-ratio: auto;
-        object-position: 50% 50%;
-        -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 34%);
-        mask-image: linear-gradient(90deg, transparent 0%, #000 34%);
+        margin: 0;
+        -webkit-mask-image: none;
+        mask-image: none;
     }
     .close-inner {
         grid-column: 1;
+        grid-row: 1;
         justify-items: start;
         text-align: left;
         margin-top: 0;
@@ -1938,36 +2019,47 @@ html:not(.js) .how-glow { opacity: 0.75; }
    --------------------------------------------------------------- */
 .site-foot {
     border-top: 1px solid var(--line);
-    padding-top: clamp(56px, 7vw, 80px);
+    padding-top: clamp(26px, 3.4vw, 34px);
     padding-bottom: env(safe-area-inset-bottom, 0px);
 }
-.sf { display: grid; justify-items: center; text-align: center; gap: 16px; }
-.sf-logo { display: inline-flex; align-items: center; gap: 10px; font-size: 1.08rem; font-weight: 600; letter-spacing: -0.03em; }
-.sf-logo img { width: 30px; height: 30px; }
-.sf-line { font-size: clamp(1.15rem, 3.4vw, 1.4rem); font-weight: 500; letter-spacing: -0.03em; line-height: 1.28; max-width: 22ch; text-wrap: balance; }
-.sf-line .ser { color: var(--accent-ink); white-space: nowrap; }
-.sf-store {
-    display: inline-flex; align-items: center; gap: 9px;
-    min-height: 46px; margin-top: 6px; padding: 0 20px; border-radius: 999px;
-    background: var(--text); color: var(--bg);
-    font-size: 0.9rem; font-weight: 600; letter-spacing: -0.02em;
-    transition: transform 240ms var(--ease);
+/* one slim row: the mark on the left, where to find us on the right,
+   and a quiet legal line beneath */
+.sf {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 18px 24px;
 }
-.sf-store svg { width: 17px; height: 17px; }
-@media (hover: hover) { .sf-store:hover { transform: translateY(-2px); } }
+.sf-logo { display: inline-flex; align-items: center; gap: 10px; font-size: 1rem; font-weight: 400; letter-spacing: -0.03em; justify-self: start; }
+.sf-logo b { font-weight: 700; }
+.sf-logo img { width: 26px; height: 26px; }
 
-.sf-nav { display: grid; gap: 12px; margin-top: 22px; }
-.sf-nav ul { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 24px; }
-.sf-nav a { font-size: 0.93rem; color: var(--text-2); transition: color 200ms ease; }
-.sf-nav-2 a { font-size: 0.85rem; color: var(--text-3); }
-@media (hover: hover) { .sf-nav a:hover { color: var(--text); } }
+.sf-social { display: flex; align-items: center; gap: 6px; }
+.sf-social a {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    color: var(--text-2);
+    transition: color 200ms ease, background 200ms ease;
+}
+.sf-social svg { width: 20px; height: 20px; }
+@media (hover: hover) { .sf-social a:hover { color: var(--text); background: var(--card); } }
 
 .sf-bar {
-    margin-top: 22px;
-    padding-bottom: 36px;
-    font-size: 0.76rem;
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px 20px;
+    padding: 4px 0 24px;
+    font-size: 0.78rem;
     color: var(--text-3);
 }
+.sf-legal { display: flex; gap: 18px; }
+.sf-legal a { transition: color 200ms ease; }
+@media (hover: hover) { .sf-legal a:hover { color: var(--text); } }
 
 /* ---------------------------------------------------------------
    16 · FOOTER (privacy + terms pages)
@@ -2231,7 +2323,7 @@ html:not(.js) .how-glow { opacity: 0.75; }
 
 @media (min-width: 761px) {
     .hero {
-        --hold: 120vh;
+        --hold: 200vh;
         display: block;
         min-height: 0;
         height: 100vh;

@@ -1,7 +1,8 @@
 /* =====================================================================
    site.js — BrandFounder
    IntersectionObserver for reveals and the demo; Web Animations for
-   the FAQ. No third-party libraries, no scroll listeners.
+   the FAQ. Scroll is only read for the hero transition and the
+   parallax, once per frame. No third-party libraries.
    ===================================================================== */
 (() => {
     'use strict';
@@ -569,6 +570,7 @@
         let raf = 0;
         let condensed = false;
         let ctaOnPage = false;
+        let eased = -1;
 
         // The card's final rectangle: a little above centre, so How it
         // works has room to arrive beneath it, with the box carried up
@@ -636,7 +638,13 @@
             }
             if (!geo) measure();
             const range = hero.offsetHeight - geo.vh;
-            const p = range > 0 ? clamp01(-hero.getBoundingClientRect().top / range) : 0;
+            const target = range > 0 ? clamp01(-hero.getBoundingClientRect().top / range) : 0;
+            // ease towards the scroll position, so one flick of the wheel
+            // glides instead of jumping the whole scene
+            eased = eased < 0 ? target : eased + (target - eased) * 0.1;
+            if (Math.abs(target - eased) < 0.0005) eased = target;
+            else raf = window.requestAnimationFrame(apply);
+            const p = eased;
 
             const tp = out(span(p, 0, 0.3));
             const sp = inOut(span(p, 0, 0.72));
@@ -719,6 +727,94 @@
             if (window.scrollY >= 0 && !stretched) return;
             if (!raf) raf = window.requestAnimationFrame(apply);
         }, { passive: true });
+    }
+
+    /* -----------------------------------------------------------
+       Parallax: every [data-parallax] element gets --py, from 1 as it
+       enters at the bottom of the screen to -1 as it leaves at the
+       top. CSS turns that into a few pixels of drift. Only elements
+       on screen are measured; reduced motion skips it.
+       ----------------------------------------------------------- */
+    function initParallax() {
+        const items = document.querySelectorAll('[data-parallax]');
+        if (!items.length || reduced.matches || !hasIO) return;
+
+        const live = new Set();
+        let raf = 0;
+        const update = () => {
+            raf = 0;
+            const vh = window.innerHeight;
+            live.forEach(el => {
+                const r = el.getBoundingClientRect();
+                const p = (r.top + r.height / 2 - vh / 2) / ((vh + r.height) / 2);
+                el.style.setProperty('--py', Math.max(-1, Math.min(1, p)).toFixed(4));
+            });
+        };
+        const queue = () => { if (!raf && live.size) raf = window.requestAnimationFrame(update); };
+
+        const io = new IntersectionObserver((entries) => {
+            entries.forEach(e => (e.isIntersecting ? live.add(e.target) : live.delete(e.target)));
+            queue();
+        }, { rootMargin: '10% 0px' });
+        items.forEach(el => io.observe(el));
+        window.addEventListener('scroll', queue, { passive: true });
+        window.addEventListener('resize', queue, { passive: true });
+    }
+
+    /* -----------------------------------------------------------
+       Free preview — the typed idea becomes the brand
+       ----------------------------------------------------------- */
+    /* While the phone is on screen it loops: hold the idea, sweep to
+       the brand, hold, fade back. Steps 1 and 2 light up with it and
+       can be clicked to jump. Reduced motion just shows the brand. */
+    function initPreviewMorph() {
+        const phone = document.querySelector('.pv-phone[data-pv]');
+        if (!phone) return;
+        const steps = phone.closest('.pv').querySelectorAll('.pv-step');
+        const HOLD_IDEA = 2600, SWEEP = 1700, HOLD_BRAND = 4200, FADE = 700;
+        let timer = 0, visible = false;
+
+        const set = (state) => {
+            phone.dataset.pv = state;
+            steps.forEach((s, i) => s.classList.toggle('is-on', i === (state === 'idea' ? 0 : 1)));
+        };
+        const later = (fn, ms) => { window.clearTimeout(timer); timer = window.setTimeout(fn, ms); };
+
+        const toBrand = () => {
+            phone.classList.remove('is-resetting');
+            phone.classList.add('is-sweeping');
+            set('brand');
+            later(toIdea, SWEEP + HOLD_BRAND);
+        };
+        const toIdea = () => {
+            phone.classList.add('is-resetting');
+            later(() => {
+                phone.classList.remove('is-sweeping');
+                set('idea');
+                void phone.offsetWidth;   // land the reset before the fade is lifted
+                phone.classList.remove('is-resetting');
+                later(toBrand, HOLD_IDEA);
+            }, FADE);
+        };
+
+        set('idea');
+        if (reduced.matches || !hasIO) { set('brand'); return; }
+
+        new IntersectionObserver(([e]) => {
+            visible = e.isIntersecting;
+            if (visible) later(phone.dataset.pv === 'idea' ? toBrand : toIdea, phone.dataset.pv === 'idea' ? 1400 : HOLD_BRAND);
+            else window.clearTimeout(timer);
+        }, { threshold: 0.45 }).observe(phone);
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) window.clearTimeout(timer);
+            else if (visible) later(phone.dataset.pv === 'idea' ? toBrand : toIdea, 1400);
+        });
+
+        steps.forEach((step, i) => {
+            if (i > 1) return;
+            step.addEventListener('click', () => (i === 0 ? toIdea() : toBrand()));
+        });
     }
 
     /* -----------------------------------------------------------
@@ -819,6 +915,8 @@
         initExamples();
         initMarquee();
         initPack();
+        initParallax();
+        initPreviewMorph();
         initFaq();
         initAnchors();
         initLegalToc();
