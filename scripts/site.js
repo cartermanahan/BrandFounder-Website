@@ -75,32 +75,46 @@
         field.textContent = '';
 
         const CPS = 46;
+        let visible = false;
+        let typed = 0;          // characters shown so far
+        let started = false;
+        let waitingToBuild = false;
 
-        function type() {
+        // The sequence only advances while the demo is on screen, so a
+        // fast scroll past it pauses the typing and the phones, and they
+        // pick up where they left off when it comes back.
+        let last = 0;
+        const step = (now) => {
+            if (!visible) { last = 0; return; }
+            if (last) typed = Math.min(full.length, typed + ((now - last) / 1000) * CPS);
+            last = now;
+            field.textContent = full.slice(0, Math.round(typed));
+            if (typed < full.length) { window.requestAnimationFrame(step); return; }
+            box.classList.remove('is-typing');
+            waitingToBuild = true;
+            window.setTimeout(build, 280);
+        };
+        const build = () => {
+            if (!visible) return;   // re-entry calls this again
+            waitingToBuild = false;
+            demo.classList.add('is-built');
+            io.disconnect();
+        };
+        const resume = () => {
+            if (demo.classList.contains('is-built')) return;
+            if (waitingToBuild) { window.setTimeout(build, 280); return; }
             box.classList.add('is-typing');
-            let start = 0;
-
-            const step = (now) => {
-                if (!start) start = now;
-                const n = Math.min(full.length, Math.round(((now - start) / 1000) * CPS));
-                field.textContent = full.slice(0, n);
-                if (n < full.length) {
-                    window.requestAnimationFrame(step);
-                    return;
-                }
-                window.setTimeout(() => {
-                    box.classList.remove('is-typing');
-                    demo.classList.add('is-built');
-                }, 280);
-            };
+            last = 0;
             window.requestAnimationFrame(step);
-        }
+        };
 
         const io = new IntersectionObserver((entries) => {
-            if (!entries.some(e => e.isIntersecting)) return;
-            io.disconnect();
-            window.setTimeout(type, 220);
-        }, { rootMargin: '0px 0px -18% 0px', threshold: 0.2 });
+            const e = entries[entries.length - 1];
+            visible = e.isIntersecting;
+            if (!visible) return;
+            if (!started) { started = true; window.setTimeout(resume, 220); }
+            else resume();
+        }, { rootMargin: '0px 0px -22% 0px', threshold: 0.4 });
         io.observe(demo);
 
         // idle the floating chips while the section is off-screen
@@ -642,6 +656,9 @@
             // ease towards the scroll position, so one flick of the wheel
             // glides instead of jumping the whole scene
             eased = eased < 0 ? target : eased + (target - eased) * 0.1;
+            // ...but never trail far behind: on a fast scroll the page keeps
+            // moving, and a lagging scene would let How it works rise into it
+            eased = Math.min(target + 0.05, Math.max(target - 0.05, eased));
             if (Math.abs(target - eased) < 0.0005) eased = target;
             else raf = window.requestAnimationFrame(apply);
             const p = eased;
